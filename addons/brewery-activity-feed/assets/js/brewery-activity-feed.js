@@ -1,5 +1,5 @@
 /*!
- * WooCommerce Untappd
+ * WooCommerce Untappd Ratings
  * https://github.com/ChillCode/wc-untappd-ratings
  *
  *
@@ -18,6 +18,7 @@
 			height: "300",
 			width: "640",
 			api_key: '',
+			brewery_id: 0,
 			center_map: 'no',
 			center_lat: '0',
 			center_lng: '0',
@@ -82,7 +83,8 @@
 					type: 'GET',
 					data: {
 						action: 'wc_untappd_map_feed',
-						wc_untappd_map_nonce: ajax_untappd_config.wc_untappd_map_nonce
+						wc_untappd_map_nonce: ajax_untappd_config.wc_untappd_map_nonce,
+						brewery_id: settings.brewery_id
 					},
 				}
 			);
@@ -288,7 +290,8 @@
 					type: 'GET',
 					data: {
 						action: 'wc_untappd_map_feed',
-						wc_untappd_map_nonce: ajax_untappd_config.wc_untappd_map_nonce
+						wc_untappd_map_nonce: ajax_untappd_config.wc_untappd_map_nonce,
+						brewery_id: settings.brewery_id
 					},
 				}
 			);

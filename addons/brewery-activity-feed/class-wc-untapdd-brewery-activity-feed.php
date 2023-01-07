@@ -72,6 +72,7 @@ class WC_Untapdd_Brewery_Activity_Feed {
 					'height'           => '500',
 					'custom_style'     => '',
 					'map_type'         => 'interactive',
+					'brewery_id'       => get_option( 'wc_untappd_map_brewery_id', '' ),
 					'center_map'       => '',
 					'lat_lng'          => '',
 					'map_use_icon'     => get_option( 'wc_untappd_map_use_icon', 'no' ) === 'yes' ? true : false,
@@ -176,7 +177,7 @@ class WC_Untapdd_Brewery_Activity_Feed {
 		$output = '<div class="' . esc_attr( $class_master ) . '" id="' . esc_attr( $map_id ) . '"' . $style_height . '></div>';
 		$output = '<div' . $id_attr . ' class="' . esc_attr( implode( ' ', $class ) ) . '"' . $style_attr . '>' . $output . '</div>';
 
-		$output_script = 'jQuery(' . esc_attr( $map_id ) . ').UntappdMap({map_type: "' . esc_attr( $atts['map_type'] ) . '", map_use_icon: ' . esc_attr( $atts['map_use_icon'] ) . ', center_lat: "' . esc_attr( $at_home_coordinates['lat'] ) . '", center_lng: "' . esc_attr( $at_home_coordinates['lng'] ) . '", center_map: "' . esc_attr( $atts['center_map'] ) . '", zoom: ' . intval( $atts['zoom'] ) . ', custom_style:  "' . esc_attr( $atts['custom_style'] ) . '", height: ' . intval( $atts['height'] ) . ', api_key: "' . esc_attr( $atts['api_key'] ) . '"});';
+		$output_script = 'jQuery(' . esc_attr( $map_id ) . ').UntappdMap({map_type: "' . esc_attr( $atts['map_type'] ) . '", map_use_icon: ' . esc_attr( $atts['map_use_icon'] ) . ', center_lat: "' . esc_attr( $at_home_coordinates['lat'] ) . '", center_lng: "' . esc_attr( $at_home_coordinates['lng'] ) . '", center_map: "' . esc_attr( $atts['center_map'] ) . '", zoom: ' . intval( $atts['zoom'] ) . ', custom_style:  "' . esc_attr( $atts['custom_style'] ) . '", height: ' . intval( $atts['height'] ) . ', brewery_id: ' . intval( $atts['brewery_id'] ) . ', api_key: "' . esc_attr( $atts['api_key'] ) . '"});';
 
 		wp_add_inline_script( 'brewery-activity-feed-js', $output_script );
 
@@ -225,7 +226,11 @@ class WC_Untapdd_Brewery_Activity_Feed {
 				wp_send_json( array( 'error' => __( 'Ivalid Request', 'wc-untappd-ratings' ) ) );
 			}
 
-			$brewery_id = get_option( 'wc_untappd_map_brewery_id', '' );
+			$brewery_id = filter_input( INPUT_GET, 'brewery_id', FILTER_VALIDATE_INT );
+
+			if ( ! $brewery_id ) {
+				$brewery_id = get_option( 'wc_untappd_map_brewery_id', '' );
+			}
 
 			if ( empty( $brewery_id ) ) {
 				wp_send_json( array( 'error' => __( 'Brewery ID is empty, please set it at Woocommerce Untappd Options Tab', 'wc-untappd-ratings' ) ) );
@@ -269,6 +274,10 @@ class WC_Untapdd_Brewery_Activity_Feed {
 			}
 
 			$brewery_feed_result = json_decode( $brewery_feed_result, true );
+
+			if ( json_last_error() !== JSON_ERROR_NONE ) {
+				wp_send_json( array( 'error' => __( 'Untappd invalid response', 'wc-untappd-ratings' ) ) );
+			}
 
 			$wc_untappd_map_feed = $this->brewery_feed( $brewery_feed_result );
 

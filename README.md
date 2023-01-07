@@ -6,11 +6,11 @@
 
 ![Ratings](https://user-images.githubusercontent.com/9787055/211172305-d12fcbfb-c612-494c-afd9-9566579c5c28.png)
 
-To find Untappd Beer ID, just find the beer on Untappd and take the ID from the url:
+To find Untappd Beer ID, just search the beer on Untappd and take the ID from the url:
 
 [https://untappd.com/b/toppling-goliath-brewing-co-kentucky-brunch-brand-stout-2016-silver-wax/<b>1905472</b>](https://untappd.com/b/toppling-goliath-brewing-co-kentucky-brunch-brand-stout-2016-silver-wax/1905472)
 
-* Add a Google Map Untappd Feed
+* Add a Google Map Untappd Feed to your site
 
 ![Map](https://user-images.githubusercontent.com/9787055/211171591-c5817264-606e-481e-a12f-d569915e8b5d.png)
 
@@ -30,7 +30,7 @@ Easy way to add a map using shortcodes:
 
 ### Configuration
 
-To configure the extension just go to Woocommerce->Settings Untappd Tab
+To configure the plugin just go to Woocommerce->Settings Untappd Tab
 
 ![Settings](https://user-images.githubusercontent.com/9787055/211172102-4ccb1fcb-7342-4aca-97cc-40a9d7bd50dd.png)
 
