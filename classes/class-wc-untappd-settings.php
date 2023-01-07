@@ -43,7 +43,7 @@ class WC_Untappd_Settings extends WC_Settings_API {
 	 * @param array $settings_tabs Woocommerce options tabs passed by filter woocommerce_settings_tabs_array.
 	 */
 	public static function woocommerce_settings_tabs_array( $settings_tabs ) {
-		$settings_tabs['untappd_settings'] = esc_html__( 'Untappd', 'woocommerce-untappd' );
+		$settings_tabs['untappd_settings'] = esc_html__( 'Untappd', 'wc-untappd-ratings' );
 
 		return $settings_tabs;
 	}
@@ -71,15 +71,15 @@ class WC_Untappd_Settings extends WC_Settings_API {
 	 */
 	public static function get_settings() {
 		$settings[] = array(
-			'title' => __( 'Config Untappd API', 'woocommerce-untappd' ),
+			'title' => __( 'Config Untappd API', 'wc-untappd-ratings' ),
 			'type'  => 'title',
 			'desc'  => 'Config Untappd API',
 			'id'    => 'wc_untappd_api_settings',
 		);
 
 		$settings[] = array(
-			'title'    => __( 'Untappd API Client ID', 'woocommerce-untappd' ),
-			'desc'     => __( 'Untappd API Client ID required to connect to Untappd API. Ask for it.', 'woocommerce-untappd' ),
+			'title'    => __( 'Untappd API Client ID', 'wc-untappd-ratings' ),
+			'desc'     => __( 'Untappd API Client ID required to connect to Untappd API. Ask for it.', 'wc-untappd-ratings' ),
 			'id'       => 'wc_untappd_client_id',
 			'default'  => '',
 			'type'     => 'password',
@@ -88,8 +88,8 @@ class WC_Untappd_Settings extends WC_Settings_API {
 		);
 
 		$settings[] = array(
-			'title'    => __( 'Untappd API Client Secret', 'woocommerce-untappd' ),
-			'desc'     => __( 'Untappd API Client Secret required to connect to Untappd API', 'woocommerce-untappd' ),
+			'title'    => __( 'Untappd API Client Secret', 'wc-untappd-ratings' ),
+			'desc'     => __( 'Untappd API Client Secret required to connect to Untappd API', 'wc-untappd-ratings' ),
 			'id'       => 'wc_untappd_client_secret',
 			'default'  => '',
 			'type'     => 'password',
@@ -98,8 +98,8 @@ class WC_Untappd_Settings extends WC_Settings_API {
 		);
 
 		$settings[] = array(
-			'title'    => __( 'API Url', 'woocommerce-untappd' ),
-			'desc'     => __( 'API server address', 'woocommerce-untappd' ),
+			'title'    => __( 'API Url', 'wc-untappd-ratings' ),
+			'desc'     => __( 'API server address', 'wc-untappd-ratings' ),
 			'id'       => 'wc_untappd_api_url',
 			'default'  => 'https://api.untappd.com/v4/',
 			'type'     => 'text',
@@ -108,8 +108,8 @@ class WC_Untappd_Settings extends WC_Settings_API {
 		);
 
 		$settings[] = array(
-			'title'    => __( 'APP Name', 'woocommerce-untappd' ),
-			'desc'     => __( 'Used to identify the application on the server', 'woocommerce-untappd' ),
+			'title'    => __( 'APP Name', 'wc-untappd-ratings' ),
+			'desc'     => __( 'Used to identify the application on the server', 'wc-untappd-ratings' ),
 			'id'       => 'wc_untappd_api_useragent',
 			'default'  => 'Woocommerce Untappd APP Version ' . WC_UNTAPPD_RATINGS_VERSION,
 			'type'     => 'text',
@@ -118,8 +118,8 @@ class WC_Untappd_Settings extends WC_Settings_API {
 		);
 
 		$settings[] = array(
-			'title'    => __( 'Show "Powered by Untappd" logo', 'woocommerce-untappd' ),
-			'desc'     => __( 'Show "Powered by Untappd" logo at Storefront credit links', 'woocommerce-untappd' ),
+			'title'    => __( 'Show "Powered by Untappd" logo', 'wc-untappd-ratings' ),
+			'desc'     => __( 'Show "Powered by Untappd" logo at Storefront credit links', 'wc-untappd-ratings' ),
 			'id'       => 'wc_untappd_show_logo',
 			'default'  => 'no',
 			'type'     => 'checkbox',
@@ -133,15 +133,15 @@ class WC_Untappd_Settings extends WC_Settings_API {
 		);
 
 		$settings[] = array(
-			'title' => __( 'Config Untappd ratings', 'woocommerce-untappd' ),
+			'title' => __( 'Config Untappd ratings', 'wc-untappd-ratings' ),
 			'type'  => 'title',
 			'desc'  => 'Config how ratings are shown',
 			'id'    => 'wc_untappd_settings',
 		);
 
 		$settings[] = array(
-			'title'    => __( 'Use Untappd ratings', 'woocommerce-untappd' ),
-			'desc'     => __( 'Overwrite Woocommerce ratings with Untappd one\'s.', 'woocommerce-untappd' ),
+			'title'    => __( 'Use Untappd ratings', 'wc-untappd-ratings' ),
+			'desc'     => __( 'Overwrite Woocommerce ratings with Untappd one\'s.', 'wc-untappd-ratings' ),
 			'id'       => 'wc_untappd_ratings_allow',
 			'default'  => 'no',
 			'type'     => 'checkbox',
@@ -150,8 +150,8 @@ class WC_Untappd_Settings extends WC_Settings_API {
 		);
 
 		$settings[] = array(
-			'title'    => __( 'Ratings text', 'woocommerce-untappd' ),
-			'desc'     => __( 'Text displayed over the ratings.', 'woocommerce-untappd' ),
+			'title'    => __( 'Ratings text', 'wc-untappd-ratings' ),
+			'desc'     => __( 'Text displayed over the ratings.', 'wc-untappd-ratings' ),
 			'id'       => 'wc_untappd_ratings_text',
 			'default'  => 'Untappd ratings',
 			'type'     => 'text',
@@ -160,8 +160,8 @@ class WC_Untappd_Settings extends WC_Settings_API {
 		);
 
 		$settings[] = array(
-			'title'    => __( 'Display ratings text', 'woocommerce-untappd' ),
-			'desc'     => __( 'Display ratings in text format x/5', 'woocommerce-untappd' ),
+			'title'    => __( 'Display ratings text', 'wc-untappd-ratings' ),
+			'desc'     => __( 'Display ratings in text format x/5', 'wc-untappd-ratings' ),
 			'id'       => 'wc_untappd_ratings_show_text',
 			'default'  => 'no',
 			'type'     => 'checkbox',
@@ -170,8 +170,8 @@ class WC_Untappd_Settings extends WC_Settings_API {
 		);
 
 		$settings[] = array(
-			'title'    => __( 'Display total ratings', 'woocommerce-untappd' ),
-			'desc'     => __( 'Display a link to Untappd with total ratings.', 'woocommerce-untappd' ),
+			'title'    => __( 'Display total ratings', 'wc-untappd-ratings' ),
+			'desc'     => __( 'Display a link to Untappd with total ratings.', 'wc-untappd-ratings' ),
 			'id'       => 'wc_untappd_ratings_show_total',
 			'default'  => 'no',
 			'type'     => 'checkbox',
@@ -180,8 +180,8 @@ class WC_Untappd_Settings extends WC_Settings_API {
 		);
 
 		$settings[] = array(
-			'title'    => __( 'Structured data', 'woocommerce-untappd' ),
-			'desc'     => __( 'Add rating data to structured data to display it on search engines (Google, Bing etc...)', 'woocommerce-untappd' ),
+			'title'    => __( 'Structured data', 'wc-untappd-ratings' ),
+			'desc'     => __( 'Add rating data to structured data to display it on search engines (Google, Bing etc...)', 'wc-untappd-ratings' ),
 			'id'       => 'wc_untappd_ratings_add_to_structured_data',
 			'default'  => 'no',
 			'type'     => 'checkbox',
@@ -190,8 +190,8 @@ class WC_Untappd_Settings extends WC_Settings_API {
 		);
 
 		$settings[] = array(
-			'title'    => __( 'Cache time', 'woocommerce-untappd' ),
-			'desc'     => __( 'Time the API query is cached', 'woocommerce-untappd' ),
+			'title'    => __( 'Cache time', 'wc-untappd-ratings' ),
+			'desc'     => __( 'Time the API query is cached', 'wc-untappd-ratings' ),
 			'id'       => 'wc_untappd_ratings_cache_time',
 			'default'  => '3',
 			'type'     => 'text',
@@ -200,8 +200,8 @@ class WC_Untappd_Settings extends WC_Settings_API {
 		);
 
 		$settings[] = array(
-			'title'    => __( 'Customer reviews minimum rating', 'woocommerce-untappd' ),
-			'desc'     => __( 'Minimum rating for indexing customer reviews', 'woocommerce-untappd' ),
+			'title'    => __( 'Customer reviews minimum rating', 'wc-untappd-ratings' ),
+			'desc'     => __( 'Minimum rating for indexing customer reviews', 'wc-untappd-ratings' ),
 			'id'       => 'wc_untappd_ratings_review_min',
 			'default'  => '3.5',
 			'type'     => 'text',
@@ -215,15 +215,15 @@ class WC_Untappd_Settings extends WC_Settings_API {
 		);
 
 		$settings[] = array(
-			'title' => __( 'Untappd Map Configurtation', 'woocommerce-untappd' ),
+			'title' => __( 'Untappd Map Configurtation', 'wc-untappd-ratings' ),
 			'type'  => 'title',
 			'desc'  => 'Configure how Untappd ratings are displayed on the map.',
 			'id'    => 'wc_untappd_settings',
 		);
 
 		$settings[] = array(
-			'title'    => __( 'Brewery ID', 'woocommerce-untappd' ),
-			'desc'     => __( 'ID of the brewery to get data from', 'woocommerce-untappd' ),
+			'title'    => __( 'Brewery ID', 'wc-untappd-ratings' ),
+			'desc'     => __( 'ID of the brewery to get data from', 'wc-untappd-ratings' ),
 			'id'       => 'wc_untappd_map_brewery_id',
 			'default'  => '',
 			'type'     => 'text',
@@ -232,8 +232,8 @@ class WC_Untappd_Settings extends WC_Settings_API {
 		);
 
 		$settings[] = array(
-			'title'    => __( 'Number of checkins to show on the map', 'woocommerce-untappd' ),
-			'desc'     => __( 'Number of checkins to show on the map, maximum 300.', 'woocommerce-untappd' ),
+			'title'    => __( 'Number of checkins to show on the map', 'wc-untappd-ratings' ),
+			'desc'     => __( 'Number of checkins to show on the map, maximum 300.', 'wc-untappd-ratings' ),
 			'id'       => 'wc_untappd_map_total_checkins',
 			'default'  => '25',
 			'type'     => 'number',
@@ -242,8 +242,8 @@ class WC_Untappd_Settings extends WC_Settings_API {
 		);
 
 		$settings[] = array(
-			'title'    => __( 'Use Untappd icon', 'woocommerce-untappd' ),
-			'desc'     => __( 'Use the Untappd icon to mark <i>Checkins</i> on the map.', 'woocommerce-untappd' ),
+			'title'    => __( 'Use Untappd icon', 'wc-untappd-ratings' ),
+			'desc'     => __( 'Use the Untappd icon to mark <i>Checkins</i> on the map.', 'wc-untappd-ratings' ),
 			'id'       => 'wc_untappd_map_use_icon',
 			'default'  => 'no',
 			'type'     => 'checkbox',
@@ -252,8 +252,8 @@ class WC_Untappd_Settings extends WC_Settings_API {
 		);
 
 		$settings[] = array(
-			'title'    => __( 'Use Custom Icon', 'woocommerce-untappd' ),
-			'desc'     => __( 'Use a custom icon to mark <i>Checkins</i> on the map.', 'woocommerce-untappd' ),
+			'title'    => __( 'Use Custom Icon', 'wc-untappd-ratings' ),
+			'desc'     => __( 'Use a custom icon to mark <i>Checkins</i> on the map.', 'wc-untappd-ratings' ),
 			'id'       => 'wc_untappd_map_use_url_icon',
 			'default'  => '',
 			'type'     => 'text',
@@ -262,8 +262,8 @@ class WC_Untappd_Settings extends WC_Settings_API {
 		);
 
 		$settings[] = array(
-			'title'    => __( 'Untappd at home default coordinates', 'woocommerce-untappd' ),
-			'desc'     => __( 'Overwrite the default coordinates for Untappd At Home', 'woocommerce-untappd' ),
+			'title'    => __( 'Untappd at home default coordinates', 'wc-untappd-ratings' ),
+			'desc'     => __( 'Overwrite the default coordinates for Untappd At Home', 'wc-untappd-ratings' ),
 			'id'       => 'wc_untappd_map_at_home_coordinates',
 			'default'  => '34.2346598,-77.9482096',
 			'type'     => 'text',

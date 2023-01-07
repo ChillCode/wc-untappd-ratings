@@ -803,7 +803,7 @@ class WC_Untappd_API {
 	 */
 	public function get( string $untappd_method, array $untappd_params = array(), int $cache_time = null ) {
 		if ( empty( $untappd_method ) ) {
-			return new WC_Untappd_Error( '_invalid_method', __( 'Empty method passed.', 'woocommerce-untappd' ), 400 );
+			return new WC_Untappd_Error( '_invalid_method', __( 'Empty method passed.', 'wc-untappd-ratings' ), 400 );
 		}
 
 		$untappd_params = wp_parse_args(
@@ -888,7 +888,7 @@ class WC_Untappd_API {
 	 */
 	public function get_authenticated( string $untappd_method, array $untappd_params = array(), int $cache_time = null ) {
 		if ( empty( $untappd_method ) ) {
-			return new WC_Untappd_Error( '_invalid_method', __( 'Empty method passed.', 'woocommerce-untappd' ), 400 );
+			return new WC_Untappd_Error( '_invalid_method', __( 'Empty method passed.', 'wc-untappd-ratings' ), 400 );
 		}
 
 		$cache_key = 'wc_untappd_get_authenticated_' . hash( 'md5', $untappd_method . wp_json_encode( $untappd_params ) );

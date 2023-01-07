@@ -201,12 +201,12 @@ class WC_Untapdd_Brewery_Activity_Feed {
 				'ajax_url'             => admin_url( 'admin-ajax.php' ),
 				'map_current_lang'     => apply_filters( 'wpml_current_language', get_locale() ),
 				'languages'            => array(
-					0 => __( ' on ', 'woocommerce-untappd' ),
-					1 => __( 'Comment', 'woocommerce-untappd' ),
-					2 => __( 'Translated comment', 'woocommerce-untappd' ),
-					3 => __( 'is drinking a', 'woocommerce-untappd' ),
-					4 => __( ' at ', 'woocommerce-untappd' ),
-					5 => __( 'View product', 'woocommerce-untappd' ),
+					0 => __( ' on ', 'wc-untappd-ratings' ),
+					1 => __( 'Comment', 'wc-untappd-ratings' ),
+					2 => __( 'Translated comment', 'wc-untappd-ratings' ),
+					3 => __( 'is drinking a', 'wc-untappd-ratings' ),
+					4 => __( ' at ', 'wc-untappd-ratings' ),
+					5 => __( 'View product', 'wc-untappd-ratings' ),
 				),
 			)
 		);
@@ -222,13 +222,13 @@ class WC_Untapdd_Brewery_Activity_Feed {
 		if ( WC_Untappd_Ratings::api_is_active() ) {
  			// PHPCS:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			if ( ! isset( $_GET['wc_untappd_map_nonce'] ) || ! wp_verify_nonce( wp_unslash( $_GET['wc_untappd_map_nonce'] ), 'wc_untappd_map_nonce' ) ) {
-				wp_send_json( array( 'error' => __( 'Ivalid Request', 'woocommerce-untappd' ) ) );
+				wp_send_json( array( 'error' => __( 'Ivalid Request', 'wc-untappd-ratings' ) ) );
 			}
 
 			$brewery_id = get_option( 'wc_untappd_map_brewery_id', '' );
 
 			if ( empty( $brewery_id ) ) {
-				wp_send_json( array( 'error' => __( 'Brewery ID is empty, please set it at Woocommerce Untappd Options Tab', 'woocommerce-untappd' ) ) );
+				wp_send_json( array( 'error' => __( 'Brewery ID is empty, please set it at Woocommerce Untappd Options Tab', 'wc-untappd-ratings' ) ) );
 			}
 
 			$max_checkins = $this->max_checkins();
@@ -259,13 +259,13 @@ class WC_Untapdd_Brewery_Activity_Feed {
 			}
 
 			if ( get_option( 'wc_untappd_map_cache_is_working' ) === 'no' ) {
-				wp_send_json( array( 'error' => __( 'Untappd Cache not working', 'woocommerce-untappd' ) ) );
+				wp_send_json( array( 'error' => __( 'Untappd Cache not working', 'wc-untappd-ratings' ) ) );
 			}
 
 			$brewery_feed_result = WC_Untappd_Ratings::API()->get( 'brewery/checkins/' . $brewery_id );
 
 			if ( is_untappd_error( $brewery_feed_result ) ) {
-				wp_send_json( array( 'error' => __( 'Untappd API not working', 'woocommerce-untappd' ) ) );
+				wp_send_json( array( 'error' => __( 'Untappd API not working', 'wc-untappd-ratings' ) ) );
 			}
 
 			$brewery_feed_result = json_decode( $brewery_feed_result, true );
@@ -273,7 +273,7 @@ class WC_Untapdd_Brewery_Activity_Feed {
 			$wc_untappd_map_feed = $this->brewery_feed( $brewery_feed_result );
 
 			if ( empty( $wc_untappd_map_feed ) ) {
-				wp_send_json( array( 'error' => __( 'Untappd invalid data', 'woocommerce-untappd' ) ) );
+				wp_send_json( array( 'error' => __( 'Untappd invalid data', 'wc-untappd-ratings' ) ) );
 			}
 
 			for ( $i = 1; $i < $max_checkins; $i++ ) {

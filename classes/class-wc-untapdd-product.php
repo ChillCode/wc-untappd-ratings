@@ -88,8 +88,8 @@ class WC_Untapdd_Product {
 	 * @param array $tabs Tabs passed by WC filter.
 	 */
 	public static function woocommerce_product_data_tabs( $tabs ) {
-		$tabs['woocommerce-untappd'] = array(
-			'label'    => esc_html__( 'Untappd', 'woocommerce-untappd' ),
+		$tabs['wc-untappd-ratings'] = array(
+			'label'    => esc_html__( 'Untappd', 'wc-untappd-ratings' ),
 			'target'   => 'wocommerce_untappd',
 			'class'    => array( '' ),
 			'priority' => 90,
@@ -115,11 +115,11 @@ class WC_Untapdd_Product {
 		woocommerce_wp_text_input(
 			array(
 				'id'          => 'untappd_beer_id',
-				'label'       => esc_html__( 'Untappd beer ID', 'woocommerce-untappd' ),
+				'label'       => esc_html__( 'Untappd beer ID', 'wc-untappd-ratings' ),
 				'placeholder' => '',
 				'value'       => ( ! empty( $untappd_beer_id ) ? $untappd_beer_id : '' ),
 				'desc_tip'    => 'true',
-				'description' => esc_html__( 'Enter untappd beer ID', 'woocommerce-untappd' ),
+				'description' => esc_html__( 'Enter untappd beer ID', 'wc-untappd-ratings' ),
 				'type'        => 'number',
 			)
 		);

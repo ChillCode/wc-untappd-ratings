@@ -80,7 +80,7 @@ if ( $untappd_ratings_allow ) {
 if ( $rating_count > 0 && $average > 0 && $untappd_ratings_allow ) : ?>
 
 		<div class="woocommerce-product-rating">
-		<div><?php esc_html_e( 'Untappd Ratings', 'woocommerce-untappd' ); ?></div>
+		<div><?php esc_html_e( 'Untappd Ratings', 'wc-untappd-ratings' ); ?></div>
 			<?php echo wc_get_rating_html( $average, $rating_count ) . $untappd_ratings_show_text; // PHPCS:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped. ?>
 			<?php //phpcs:disable ?>
 			<?php if ($untappd_ratings_show_total): ?>
@@ -95,7 +95,7 @@ if ( $rating_count > 0 && $average > 0 && $untappd_ratings_allow ) : ?>
 		<?php echo wc_get_rating_html( $average, $rating_count );  // PHPCS:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped. ?>
 		<?php if ( comments_open() ) : ?>
 			<?php //phpcs:disable ?>
-			<a href="#reviews" class="woocommerce-review-link" rel="nofollow">(<?php printf( _n( '%s customer review', '%s customer reviews', $review_count, 'woocommerce-untappd' ), '<span class="count">' . esc_html( $review_count ) . '</span>' ); ?>)</a>
+			<a href="#reviews" class="woocommerce-review-link" rel="nofollow">(<?php printf( _n( '%s customer review', '%s customer reviews', $review_count, 'wc-untappd-ratings' ), '<span class="count">' . esc_html( $review_count ) . '</span>' ); ?>)</a>
 			<?php // phpcs:enable ?>
 		<?php endif ?>
 	</div>

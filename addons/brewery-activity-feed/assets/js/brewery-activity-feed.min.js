@@ -1,6 +1,6 @@
 /*!
  * WooCommerce Untappd
- * https://github.com/ChillCode/woocommerce-untappd
+ * https://github.com/ChillCode/wc-untappd-ratings
  *
  *
  * Copyright (C) 2022 ChillCode

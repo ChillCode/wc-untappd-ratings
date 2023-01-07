@@ -78,8 +78,8 @@ final class WC_Untappd_Ratings {
 		if ( in_array( $woocommerce_plugin_path, (array) wp_get_active_and_valid_plugins(), true ) ||
 			in_array( $woocommerce_plugin_path, wp_get_active_network_plugins(), true )
 		) {
-			add_filter( 'network_admin_plugin_action_links_woocommerce-untappd/woocommerce-untappd.php', array( $this, 'plugin_action_links_woocommerce' ) );
-			add_filter( 'plugin_action_links_woocommerce-untappd/woocommerce-untappd.php', array( $this, 'plugin_action_links_woocommerce' ) );
+			add_filter( 'network_admin_plugin_action_links_woocommerce-untappd/wc-untappd-ratings.php', array( $this, 'plugin_action_links_woocommerce' ) );
+			add_filter( 'plugin_action_links_woocommerce-untappd/wc-untappd-ratings.php', array( $this, 'plugin_action_links_woocommerce' ) );
 
 			add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ) );
 		} else {
@@ -89,7 +89,7 @@ final class WC_Untappd_Ratings {
 					global $pagenow;
 
 					if ( 'plugins.php' === $pagenow ) {
-						printf( '<div class="%1$s"><p>%2$s</p></div>', 'notice notice-error is-dismissible', esc_html__( 'WooCommerce Untappd requires WooCommerce to be installed and active.', 'woocommerce-untappd' ) );
+						printf( '<div class="%1$s"><p>%2$s</p></div>', 'notice notice-error is-dismissible', esc_html__( 'WooCommerce Untappd requires WooCommerce to be installed and active.', 'wc-untappd-ratings' ) );
 					}
 				}
 			);
@@ -106,7 +106,7 @@ final class WC_Untappd_Ratings {
 	public function plugin_action_links_woocommerce( array $actions ) {
 		return array_merge(
 			array(
-				'settings' => '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=untappd_settings' ) . '">' . esc_html__( 'Settings', 'woocommerce-untappd' ) . '</a>',
+				'settings' => '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=untappd_settings' ) . '">' . esc_html__( 'Settings', 'wc-untappd-ratings' ) . '</a>',
 			),
 			$actions
 		);
@@ -119,7 +119,7 @@ final class WC_Untappd_Ratings {
 	 */
 	public function init() {
 		if ( function_exists( 'load_plugin_textdomain' ) ) {
-			load_plugin_textdomain( 'woocommerce-untappd', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+			load_plugin_textdomain( 'wc-untappd-ratings', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 		}
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'untappd_enqueue_scripts' ) );
@@ -161,7 +161,7 @@ final class WC_Untappd_Ratings {
 					global $pagenow;
 
 					if ( 'plugins.php' === $pagenow ) {
-						printf( '<div class="%1$s"><p>%2$s</p></div>', 'notice notice-error is-dismissible', esc_html__( 'Configure Woocommerce Untappd to start using it.', 'woocommerce-untappd' ) );
+						printf( '<div class="%1$s"><p>%2$s</p></div>', 'notice notice-error is-dismissible', esc_html__( 'Configure Woocommerce Untappd to start using it.', 'wc-untappd-ratings' ) );
 					}
 				}
 			);
@@ -323,7 +323,7 @@ function wc_untappd_logger( $message, $level = 'debug' ) {
 	if ( function_exists( 'wc_get_logger' ) ) {
 		$logger = wc_get_logger();
 
-		$context = array( 'source' => 'woocommerce-untappd' );
+		$context = array( 'source' => 'wc-untappd-ratings' );
 
 		$logger->log( $level, $message, $context );
 	} else {

@@ -14,8 +14,8 @@
  *
  * @author    ChillCode
  * @copyright Copyright (c) 2003-2022, ChillCode (https://github.com/chillcode/)
- * @license   http://www.apache.org/licenses/LICENSE-2.0 APACHE License v2.0
- * @package   Woocommerce Untappd
+ * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
+ * @package   WooCommerce Untappd Ratings
  *
  * Domain Path: /languages/
  * Requires at least: 5.6
