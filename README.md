@@ -4,6 +4,7 @@ A Untappd API key is required to properly work.
 
 * Show Untappd Ratings instead of WooCommerce one's
 * Add a Google Map Untappd Feed
+* Add Ratings to Structured Data
 
 Shortcode to add a Map
 
