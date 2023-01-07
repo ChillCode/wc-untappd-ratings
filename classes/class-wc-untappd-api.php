@@ -830,7 +830,7 @@ class WC_Untappd_API {
 		$response_code = wp_remote_retrieve_response_code( $response_data );
 
 		if ( 200 !== (int) $response_code ) {
-			return new WC_Untappd_Error( '_invalid_response_code', $this->untappt_x_ratelimit_remaining, 400 );
+			return new WC_Untappd_Error( '_invalid_response_code', $response_code, 400 );
 		}
 
 		$response_data_body = wp_remote_retrieve_body( $response_data );
@@ -920,7 +920,13 @@ class WC_Untappd_API {
 			),
 		);
 
-		$response_data      = wp_safe_remote_get( $this->untappd_api_url . $untappd_method . '?' . http_build_query( $untappd_params ), $arguments );
+		$response_data = wp_safe_remote_get( $this->untappd_api_url . $untappd_method . '?' . http_build_query( $untappd_params ), $arguments );
+		$response_code = wp_remote_retrieve_response_code( $response_data );
+
+		if ( 200 !== (int) $response_code ) {
+			return new WC_Untappd_Error( '_invalid_response_code', $response_code, 400 );
+		}
+
 		$response_data_body = wp_remote_retrieve_body( $response_data );
 
 		if ( empty( $response_data_body ) ) {
