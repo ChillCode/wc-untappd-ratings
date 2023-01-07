@@ -1,5 +1,11 @@
 # WooCommerce Untappd Ratings
 
+### Prerequisites
+
+* [WordPress](https://wordpress.org)
+* [WooCommerce](https://github.com/woocommerce/woocommerce)
+* [Untappd API Key](https://untappd.com/api/dashboard)
+
 * Show Untappd Ratings on product page instead of WooCommerce one's
 
 ![Beer ID](https://user-images.githubusercontent.com/9787055/211172256-d9a54599-0788-41fb-84bc-f84e1d713e53.png)
@@ -21,12 +27,6 @@ Easy way to add a map using shortcodes:
 * Add Ratings to Structured Data
 
 ![Structured Data](https://user-images.githubusercontent.com/9787055/211171958-bb889589-d6c8-4747-bf15-45202e1166c4.png)
-
-### Prerequisites
-
-* [WordPress](https://wordpress.org)
-* [WooCommerce](https://github.com/woocommerce/woocommerce)
-* [Untappd API Key](https://untappd.com/api/dashboard)
 
 ### Configuration
 
