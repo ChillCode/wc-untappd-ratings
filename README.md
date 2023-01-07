@@ -1,4 +1,4 @@
-## WooCommerce Untappd Ratings
+# WooCommerce Untappd Ratings
 
 A Untappd API key is required to properly work.
 
