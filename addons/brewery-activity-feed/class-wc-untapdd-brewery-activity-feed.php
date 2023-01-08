@@ -165,7 +165,7 @@ class WC_Untapdd_Brewery_Activity_Feed {
 		$style_height = '';
 
 		if ( ! empty( $atts['height'] ) && 'interactive' === $atts['map_type'] ) {
-			$style_height = ' style="height:' . $atts['height'] . 'px;"';
+			$style_height = ' style="height:' . absint( $atts['height'] ) . 'px;"';
 		}
 
 		$at_home_coordinates = $this->get_home_coordinates( $atts['lat_lng'] );
