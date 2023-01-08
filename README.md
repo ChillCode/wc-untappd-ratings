@@ -20,9 +20,9 @@ To find Untappd Beer ID, just search the beer on Untappd and take the ID from th
 
 ![Map](https://user-images.githubusercontent.com/9787055/211171591-c5817264-606e-481e-a12f-d569915e8b5d.png)
 
-Easy way to add a map using shortcodes:
+Easy way to add a map using a shortcode:
 
-[wc_untappd_map brewery_id="73836" api_key="GOOGLE_API_KEY" zoom="4" height="500" width="500"]
+[wc_untappd_map brewery_id="73836" api_key="GOOGLE_API_KEY" zoom="4" height="500"]
 
 ## Add Ratings to Structured Data
 
