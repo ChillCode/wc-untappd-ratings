@@ -12,7 +12,7 @@
 
 ![Ratings](https://user-images.githubusercontent.com/9787055/211172305-d12fcbfb-c612-494c-afd9-9566579c5c28.png)
 
-To find Untappd Beer ID, just search the beer on Untappd and take the ID from the url:
+To find the Untappd Beer ID, just search the beer on Untappd and get the ID from the url:
 
 [https://untappd.com/b/toppling-goliath-brewing-co-kentucky-brunch-brand-stout-2016-silver-wax/<b>1905472</b>](https://untappd.com/b/toppling-goliath-brewing-co-kentucky-brunch-brand-stout-2016-silver-wax/1905472)
 
