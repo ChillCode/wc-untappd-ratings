@@ -78,8 +78,8 @@ final class WC_Untappd_Ratings {
 		if ( in_array( $woocommerce_plugin_path, (array) wp_get_active_and_valid_plugins(), true ) ||
 			in_array( $woocommerce_plugin_path, wp_get_active_network_plugins(), true )
 		) {
-			add_filter( 'network_admin_plugin_action_links_woocommerce-untappd/wc-untappd-ratings.php', array( $this, 'plugin_action_links_woocommerce' ) );
-			add_filter( 'plugin_action_links_woocommerce-untappd/wc-untappd-ratings.php', array( $this, 'plugin_action_links_woocommerce' ) );
+			add_filter( 'network_admin_plugin_action_links_wc-untappd-ratings/wc-untappd-ratings.php', array( $this, 'plugin_action_links_woocommerce' ) );
+			add_filter( 'plugin_action_links_wc-untappd-ratings/wc-untappd-ratings.php', array( $this, 'plugin_action_links_woocommerce' ) );
 
 			add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ) );
 		} else {
@@ -104,6 +104,7 @@ final class WC_Untappd_Ratings {
 	 * @return array
 	 */
 	public function plugin_action_links_woocommerce( array $actions ) {
+
 		return array_merge(
 			array(
 				'settings' => '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=untappd_settings' ) . '">' . esc_html__( 'Settings', 'wc-untappd-ratings' ) . '</a>',
