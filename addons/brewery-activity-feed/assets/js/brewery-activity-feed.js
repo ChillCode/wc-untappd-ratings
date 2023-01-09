@@ -19,6 +19,7 @@
 			width: "640",
 			api_key: '',
 			brewery_id: 0,
+			max_checkins: 25,
 			center_map: 'no',
 			center_lat: '0',
 			center_lng: '0',
@@ -84,7 +85,8 @@
 					data: {
 						action: 'wc_untappd_map_feed',
 						wc_untappd_map_nonce: ajax_untappd_config.wc_untappd_map_nonce,
-						brewery_id: settings.brewery_id
+						brewery_id: settings.brewery_id,
+						max_checkins: settings.max_checkins
 					},
 				}
 			);
@@ -291,7 +293,8 @@
 					data: {
 						action: 'wc_untappd_map_feed',
 						wc_untappd_map_nonce: ajax_untappd_config.wc_untappd_map_nonce,
-						brewery_id: settings.brewery_id
+						brewery_id: settings.brewery_id,
+						max_checkins: settings.max_checkins
 					},
 				}
 			);
@@ -307,8 +310,6 @@
 
 					if (settings.center_map === 'yes') {
 						centerLatLng = [settings.center_lat, settings.center_lng];
-					} else {
-						centerLatLng = [0, 0];
 					}
 
 					var markers = '&markers=size:small%7Ccolor:0x2ad2c5%7C';
@@ -323,6 +324,11 @@
 								if (data[property].hasOwnProperty(property_in)) {
 									if (!data[property][property_in].lat || !data[property][property_in].lng) {
 										return false;
+									}
+
+									// Center map on static maps to latest checkin lat/lng to prevent centering on empty markers.
+									if (settings.center_map === 'no') {
+										centerLatLng = [data[property][property_in].lat, data[property][property_in].lng];
 									}
 
 									markers = markers + data[property][property_in].lat + ',' + data[property][property_in].lng + '%7C';
