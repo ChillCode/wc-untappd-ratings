@@ -73,6 +73,7 @@ class WC_Untapdd_Brewery_Activity_Feed {
 					'custom_style'     => '',
 					'map_type'         => 'interactive',
 					'brewery_id'       => get_option( 'wc_untappd_map_brewery_id', '' ),
+					'max_checkins'     => get_option( 'wc_untappd_map_total_checkins', 25 ),
 					'center_map'       => '',
 					'lat_lng'          => '',
 					'map_use_icon'     => get_option( 'wc_untappd_map_use_icon', 'no' ) === 'yes' ? true : false,
@@ -177,7 +178,7 @@ class WC_Untapdd_Brewery_Activity_Feed {
 		$output = '<div class="' . esc_attr( $class_master ) . '" id="' . esc_attr( $map_id ) . '"' . $style_height . '></div>';
 		$output = '<div' . $id_attr . ' class="' . esc_attr( implode( ' ', $class ) ) . '"' . $style_attr . '>' . $output . '</div>';
 
-		$output_script = 'jQuery(' . esc_attr( $map_id ) . ').UntappdMap({map_type: "' . esc_attr( $atts['map_type'] ) . '", map_use_icon: ' . (int) $atts['map_use_icon'] . ', center_lat: "' . esc_attr( $at_home_coordinates['lat'] ) . '", center_lng: "' . esc_attr( $at_home_coordinates['lng'] ) . '", center_map: "' . esc_attr( $atts['center_map'] ) . '", zoom: ' . intval( $atts['zoom'] ) . ', custom_style:  "' . esc_attr( $atts['custom_style'] ) . '", height: ' . intval( $atts['height'] ) . ', brewery_id: ' . intval( $atts['brewery_id'] ) . ', api_key: "' . esc_attr( $atts['api_key'] ) . '"});';
+		$output_script = 'jQuery(' . esc_attr( $map_id ) . ').UntappdMap({map_type: "' . esc_attr( $atts['map_type'] ) . '", max_checkins: ' . absint( $atts['max_checkins'] ) . ', map_use_icon: ' . (int) $atts['map_use_icon'] . ', map_use_url_icon: "' . esc_attr( $atts['map_use_url_icon'] ) . '", center_lat: "' . esc_attr( $at_home_coordinates['lat'] ) . '", center_lng: "' . esc_attr( $at_home_coordinates['lng'] ) . '", center_map: "' . esc_attr( $atts['center_map'] ) . '", zoom: ' . intval( $atts['zoom'] ) . ', custom_style:  "' . esc_attr( $atts['custom_style'] ) . '", height: ' . intval( $atts['height'] ) . ', brewery_id: ' . intval( $atts['brewery_id'] ) . ', api_key: "' . esc_attr( $atts['api_key'] ) . '"});';
 
 		wp_add_inline_script( 'brewery-activity-feed-js', $output_script );
 
@@ -236,7 +237,7 @@ class WC_Untapdd_Brewery_Activity_Feed {
 				wp_send_json( array( 'error' => __( 'Brewery ID is empty, please set it at Woocommerce Untappd Options Tab', 'wc-untappd-ratings' ) ) );
 			}
 
-			$max_checkins = $this->max_checkins();
+			$max_checkins = $this->max_checkins( filter_input( INPUT_GET, 'max_checkins', FILTER_VALIDATE_INT ) );
 
 			$cache_key = 'wc_untappd_map_feed_' . $brewery_id . ( ( current_user_can( 'edit_posts' ) ) ? '_is_admin_' : '_' ) . apply_filters( 'wpml_current_language', '' ) . '_' . $max_checkins;
 
@@ -432,11 +433,13 @@ class WC_Untapdd_Brewery_Activity_Feed {
 
 	/**
 	 * Get maximum calls to make, 25 checkins per call, max 12.
+	 *
+	 * @param int $max_checkins Chekins to show.
 	 */
-	private function max_checkins() {
-		$max_checkins = absint( get_option( 'wc_untappd_map_total_checkins', 300 ) ) / 25;
+	private function max_checkins( int $max_checkins = null ) {
+		$max_checkins = ( $max_checkins ? $max_checkins : absint( get_option( 'wc_untappd_map_total_checkins', 25 ) ) ) / 25;
 
-		return ( $max_checkins > 12 ) ? 12 : $max_checkins;
+		return ( $max_checkins > 12 ) ? 12 : absint( $max_checkins );
 	}
 
 	/**
