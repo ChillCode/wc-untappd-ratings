@@ -326,8 +326,8 @@
 										return false;
 									}
 
-									// Center map on static maps to latest checkin lat/lng to prevent centering on empty markers.
-									if (settings.center_map === 'no') {
+									// Center map on static maps to latest checkin lat/lng to prevent centering not showing markers.
+									if (settings.center_map !== 'yes') {
 										centerLatLng = [data[property][property_in].lat, data[property][property_in].lng];
 									}
 
