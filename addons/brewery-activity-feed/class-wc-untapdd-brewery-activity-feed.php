@@ -177,7 +177,7 @@ class WC_Untapdd_Brewery_Activity_Feed {
 		$output = '<div class="' . esc_attr( $class_master ) . '" id="' . esc_attr( $map_id ) . '"' . $style_height . '></div>';
 		$output = '<div' . $id_attr . ' class="' . esc_attr( implode( ' ', $class ) ) . '"' . $style_attr . '>' . $output . '</div>';
 
-		$output_script = 'jQuery(' . esc_attr( $map_id ) . ').UntappdMap({map_type: "' . esc_attr( $atts['map_type'] ) . '", map_use_icon: ' . esc_attr( $atts['map_use_icon'] ) . ', center_lat: "' . esc_attr( $at_home_coordinates['lat'] ) . '", center_lng: "' . esc_attr( $at_home_coordinates['lng'] ) . '", center_map: "' . esc_attr( $atts['center_map'] ) . '", zoom: ' . intval( $atts['zoom'] ) . ', custom_style:  "' . esc_attr( $atts['custom_style'] ) . '", height: ' . intval( $atts['height'] ) . ', brewery_id: ' . intval( $atts['brewery_id'] ) . ', api_key: "' . esc_attr( $atts['api_key'] ) . '"});';
+		$output_script = 'jQuery(' . esc_attr( $map_id ) . ').UntappdMap({map_type: "' . esc_attr( $atts['map_type'] ) . '", map_use_icon: ' . esc_attr( (int) $atts['map_use_icon'] ) . ', center_lat: "' . esc_attr( $at_home_coordinates['lat'] ) . '", center_lng: "' . esc_attr( $at_home_coordinates['lng'] ) . '", center_map: "' . esc_attr( $atts['center_map'] ) . '", zoom: ' . intval( $atts['zoom'] ) . ', custom_style:  "' . esc_attr( $atts['custom_style'] ) . '", height: ' . intval( $atts['height'] ) . ', brewery_id: ' . intval( $atts['brewery_id'] ) . ', api_key: "' . esc_attr( $atts['api_key'] ) . '"});';
 
 		wp_add_inline_script( 'brewery-activity-feed-js', $output_script );
 
