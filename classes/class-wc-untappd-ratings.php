@@ -58,13 +58,6 @@ final class WC_Untappd_Ratings {
 	protected static $product_instance = null;
 
 	/**
-	 * Untappd parameters.
-	 *
-	 * @var array
-	 */
-	protected $untappd_params = null;
-
-	/**
 	 * Initialize Untappd for WooCommerce.
 	 *
 	 * @return void
@@ -147,15 +140,14 @@ final class WC_Untappd_Ratings {
 			self::$settings_instance = new WC_Untappd_Settings();
 		}
 
-		$this->untappd_params = array(
+		$untappd_params = array(
 			'client_id'     => get_option( 'wc_untappd_client_id' ),
 			'client_secret' => get_option( 'wc_untappd_client_secret' ),
+			'api_url'       => get_option( 'wc_untappd_api_url' ),
+			'app_name'      => get_option( 'wc_untappd_api_useragent' ),
 		);
 
-		$api_url  = get_option( 'wc_untappd_api_url' );
-		$app_name = get_option( 'wc_untappd_api_useragent' );
-
-		if ( empty( $api_url ) || empty( $app_name ) || empty( $this->untappd_params['client_id'] ) || empty( $this->untappd_params['client_secret'] ) ) {
+		if ( empty( $untappd_params['api_url'] ) || empty( $untappd_params['app_name'] ) || empty( $untappd_params['client_id'] ) || empty( $untappd_params['client_secret'] ) ) {
 			add_action(
 				'admin_notices',
 				function() {
@@ -173,7 +165,7 @@ final class WC_Untappd_Ratings {
 			require_once WC_UNTAPPD_RATINGS_PLUGIN_DIR . 'classes' . DIRECTORY_SEPARATOR . 'class-wc-untappd-api.php';
 			require_once WC_UNTAPPD_RATINGS_PLUGIN_DIR . 'classes' . DIRECTORY_SEPARATOR . 'class-wc-untapdd-product.php';
 
-			self::$api_instance     = new WC_Untappd_API( $this->untappd_params['client_id'], $this->untappd_params['client_secret'], $app_name, $api_url );
+			self::$api_instance     = new WC_Untappd_API( $untappd_params['client_id'], $untappd_params['client_secret'], $untappd_params['app_name'], $untappd_params['api_url'] );
 			self::$product_instance = new WC_Untapdd_Product();
 
 			require_once WC_UNTAPPD_RATINGS_PLUGIN_DIR . '/addons/brewery-activity-feed/class-wc-untapdd-brewery-activity-feed.php';
@@ -197,10 +189,12 @@ final class WC_Untappd_Ratings {
 	 * @return void
 	 */
 	public static function deactivate() {
+		static::delete_cache();
+		static::delete_options();
 	}
 
 	/**
-	 * Activate plugin, keep sapcing for database creation.
+	 * Activate plugin, keep for database creation.
 	 *
 	 * @return void
 	 */
@@ -237,6 +231,20 @@ final class WC_Untappd_Ratings {
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery.NoCaching
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		return $wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '%\_transient\_wc\_untappd%'" );
+	}
+
+	/**
+	 * Delete options.
+	 *
+	 * @return int|false
+	 */
+	public static function delete_options() {
+		global $wpdb;
+
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		return $wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE 'wc\_untappd%'" );
 	}
 
 	/**
