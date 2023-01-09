@@ -56,10 +56,10 @@ class WC_Untapdd_Product {
 	 */
 	public function posts_clauses( $posts_clauses, $wp_query ) {
 		$orderby = $wp_query->get( 'orderby' );
-		$order   = esc_sql( $wp_query->get( 'order' ) ? $wp_query->get( 'order' ) : 'desc' );
 
 		switch ( $orderby ) {
 			case '_untappd_average_rating':
+				$order                    = $wp_query->get( 'order' ) ? esc_sql( $wp_query->get( 'order' ) ) : 'desc';
 				$posts_clauses['orderby'] = " wp_postmeta.meta_value+0 {$order}, wp_posts.ID {$order} ";
 				break;
 		}
@@ -90,7 +90,7 @@ class WC_Untapdd_Product {
 	public static function woocommerce_product_data_tabs( $tabs ) {
 		$tabs['wc-untappd-ratings'] = array(
 			'label'    => esc_html__( 'Untappd', 'wc-untappd-ratings' ),
-			'target'   => 'wocommerce_untappd',
+			'target'   => 'woocommerce_untappd',
 			'class'    => array( '' ),
 			'priority' => 90,
 		);
@@ -104,9 +104,9 @@ class WC_Untapdd_Product {
 	public static function woocommerce_product_data_panels() {
 		global $post;
 
-		echo "<div id='wocommerce_untappd' class='panel woocommerce_options_panel'>";
+		echo "<div id='woocommerce_untappd' class='panel woocommerce_options_panel'>";
 
-		wp_nonce_field( 'wocommerce_untappd_nonce', 'wocommerce_untappd_nonce' );
+		wp_nonce_field( 'woocommerce_untappd_nonce', 'woocommerce_untappd_nonce' );
 
 		echo '<div class="options_group">';
 
@@ -138,13 +138,9 @@ class WC_Untapdd_Product {
 			return;
 		}
 
-		$wocommerce_untappd_nonce = filter_input( INPUT_POST, 'wocommerce_untappd_nonce', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		$woocommerce_untappd_nonce = filter_input( INPUT_POST, 'woocommerce_untappd_nonce', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 		// PHPCS:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		if ( ! $wocommerce_untappd_nonce || ! wp_verify_nonce( $wocommerce_untappd_nonce, 'wocommerce_untappd_nonce' ) ) {
-			return;
-		}
-
-		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+		if ( ! $woocommerce_untappd_nonce || ! wp_verify_nonce( $woocommerce_untappd_nonce, 'woocommerce_untappd_nonce' ) || ! current_user_can( 'edit_post', $post_id ) ) {
 			return;
 		}
 
@@ -154,7 +150,7 @@ class WC_Untapdd_Product {
 	}
 
 	/**
-	 * Add Untappd beer data to structured content.
+	 * Add Untappd beer data to structured data.
 	 *
 	 * @param array  $array Context array.
 	 * @param array  $data Structured data.
@@ -198,7 +194,7 @@ class WC_Untapdd_Product {
 
 					if ( $untappd_checkins['count'] > 1 ) {
 						foreach ( $untappd_checkins['items'] as $checkin ) {
-							$checkin_rating_score                  = (int) $checkin['rating_score'];
+							$checkin_rating_score                  = round( (float) $checkin['rating_score'], 2 );
 							$checkin_rating_score_minimum_required = (float) get_option( 'wc_untappd_ratings_review_min', 3.5 );
 							if ( ! empty( $checkin['checkin_comment'] ) && $checkin_rating_score >= $checkin_rating_score_minimum_required && $rating_value > 0 && $review_count > 0 ) {
 								$review_author = trim( $checkin['user']['first_name'] );
