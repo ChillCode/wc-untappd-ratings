@@ -6,7 +6,7 @@
  * Description: Connect your WooCommerce Store with Untappd
  * Author: ChillCode
  * Author URI: https://github.com/chillcode/
- * Version: 1.0.0
+ * Version: 1.0.1
  * Text Domain: wc-untappd-ratings
  * Domain Path: /languages/
  *
@@ -30,7 +30,7 @@ defined( 'ABSPATH' ) || exit;
 // Define global constants.
 define( 'WC_UNTAPPD_RATINGS_PLUGIN_FILE', __FILE__ );
 define( 'WC_UNTAPPD_RATINGS_PLUGIN_DIR', dirname( WC_UNTAPPD_RATINGS_PLUGIN_FILE ) . DIRECTORY_SEPARATOR );
-define( 'WC_UNTAPPD_RATINGS_VERSION', '1.0.0' );
+define( 'WC_UNTAPPD_RATINGS_VERSION', '1.0.1' );
 
 require_once WC_UNTAPPD_RATINGS_PLUGIN_DIR . 'classes' . DIRECTORY_SEPARATOR . 'class-wc-untappd-ratings.php';
 
