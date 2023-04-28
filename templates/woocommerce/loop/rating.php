@@ -1,23 +1,18 @@
 <?php
 /**
- * Copyright 2021 ChillCode All rights reserved.
+ * Loop Rating
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This template can be overridden by copying it to yourtheme/woocommerce/loop/rating.php.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * HOWEVER, on occasion WooCommerce will need to update template files and you
+ * (the theme developer) will need to copy the new files to your theme to
+ * maintain compatibility. We try to do this as little as possible, but it does
+ * happen. When this occurs the version of the template file will be bumped and
+ * the readme will list any important changes.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * @author    ChillCode
- * @copyright Copyright (c) 2003-2021, ChillCode All rights reserved.
- * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
- * @package   WooCommerce Untappd
+ * @see https://docs.woocommerce.com/document/template-structure/
+ * @package WooCommerce\Templates
+ * @version 3.6.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
