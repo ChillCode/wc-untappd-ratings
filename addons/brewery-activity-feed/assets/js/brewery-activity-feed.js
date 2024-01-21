@@ -1,5 +1,5 @@
 /*!
- * WooCommerce Untappd Ratings
+ * Untappd Ratings for WooCommerce
  * https://github.com/ChillCode/wc-untappd-ratings
  *
  *
