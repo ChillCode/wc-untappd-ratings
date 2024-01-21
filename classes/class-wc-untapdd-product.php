@@ -145,7 +145,7 @@ class WC_Untapdd_Product {
 		}
 
 		if ( isset( $_POST['untappd_beer_id'] ) ) {
-			update_post_meta( $post_id, '_untappd_beer_id', (int) $_POST['untappd_beer_id'] );
+			update_post_meta( $post_id, '_untappd_beer_id', absint( $_POST['untappd_beer_id'] ) );
 		}
 	}
 
@@ -170,7 +170,7 @@ class WC_Untapdd_Product {
 
 			$beer_info = WC_Untappd_Ratings::API()->beer_info( $beer_id );
 
-			if ( isset( $beer_info['response'] ) && isset( $beer_info['response']['beer'] ) && isset( $beer_info['response']['beer']['rating_count'] ) && isset( $beer_info['response']['beer']['rating_score'] ) ) {
+			if ( isset( $beer_info['response']['beer']['rating_count'] ) && isset( $beer_info['response']['beer']['rating_score'] ) ) {
 				$rating_value = round( (float) $beer_info['response']['beer']['rating_score'], 2 );
 				$review_count = (int) $beer_info['response']['beer']['rating_count'];
 
@@ -181,7 +181,7 @@ class WC_Untapdd_Product {
 				}
 
 				$array['brand']['@type'] = 'Brand';
-				$array['brand']['name']  = (string) isset( $beer_info['response']['beer']['brewery']['brewery_name'] ) ? $beer_info['response']['beer']['brewery']['brewery_name'] : get_bloginfo( 'name' );
+				$array['brand']['name']  = (string) isset( $beer_info['response']['beer']['brewery']['brewery_name'] ) ? esc_attr( $beer_info['response']['beer']['brewery']['brewery_name'] ) : get_bloginfo( 'name' );
 
 				$array['MPN'] = $product->get_sku();
 
@@ -189,7 +189,7 @@ class WC_Untapdd_Product {
 					$array['MPN'] = 'Untappd' . $beer_id;
 				}
 
-				if ( isset( $beer_info['response']['beer']['checkins'] ) && ! empty( $beer_info['response']['beer']['checkins'] ) ) {
+				if ( ! empty( $beer_info['response']['beer']['checkins'] ) ) {
 					$untappd_checkins = $beer_info['response']['beer']['checkins'];
 
 					if ( $untappd_checkins['count'] > 1 ) {
@@ -203,9 +203,9 @@ class WC_Untapdd_Product {
 								$review_date = gmdate( 'Y-m-d', strtotime( $checkin['created_at'] ) );
 
 								$review_description = trim( $checkin['checkin_comment'] );
-								$review_description = ( $review_description ) ? $review_description : 'Untappd Rating';
+								$review_description = ( $review_description ) ? esc_html( $review_description ) : 'Untappd Rating';
 
-								$review_name = $checkin['beer']['beer_name'];
+								$review_name = esc_attr( $checkin['beer']['beer_name'] );
 
 								$array['review'][] = array(
 									'@type'         => 'Review',
