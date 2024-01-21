@@ -65,7 +65,6 @@ class WC_Untappd_Settings extends WC_Settings_API {
 		woocommerce_update_options( self::get_settings() );
 	}
 
-
 	/**
 	 * Untappd related settings.
 	 */
