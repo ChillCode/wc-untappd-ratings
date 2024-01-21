@@ -596,12 +596,12 @@ class WC_Untappd_API {
 	/**
 	 * This method will allow you to toast a checkin. Please note, if the user has already toasted this check-in, it will delete the toast.
 	 * Note: If you want to un-toast a check-in, you call the same method. The resulting response will tell you if the authenticated user has toasted the check-in.
-
-	 * @param string $access_token (Optional) The access token for the acting user.
+	 *
 	 * @param int    $checkin_id (Required) The checkin ID of checkin you want to toast.
+	 * @param string $access_token (Optional) The access token for the acting user.
 	 * @return json|bool
 	 */
-	public function toast_untoast_checkin( string $access_token = '', int $checkin_id ) {
+	public function toast_untoast_checkin( int $checkin_id, string $access_token = '' ) {
 		$untappd_params = array(
 			( empty( $access_token ) ) ? null : 'access_token' => $access_token,
 		);
