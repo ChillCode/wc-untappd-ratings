@@ -190,7 +190,6 @@ final class WC_Untappd_Ratings {
 	 */
 	public static function deactivate() {
 		static::delete_cache();
-		static::delete_options();
 	}
 
 	/**
@@ -199,6 +198,15 @@ final class WC_Untappd_Ratings {
 	 * @return void
 	 */
 	public static function activate() {
+	}
+
+	/**
+	 * Uninstall plugin.
+	 *
+	 * @return void
+	 */
+	public static function uninstall() {
+		static::delete_options();
 	}
 
 	/**
@@ -304,6 +312,11 @@ register_activation_hook(
 register_deactivation_hook(
 	WC_UNTAPPD_RATINGS_PLUGIN_FILE,
 	array( 'WC_Untappd_Ratings', 'deactivate' )
+);
+
+register_uninstall_hook(
+	WC_UNTAPPD_RATINGS_PLUGIN_FILE,
+	array( 'WC_Untappd_Ratings', 'uninstall' )
 );
 
 /**
