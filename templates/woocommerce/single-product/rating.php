@@ -30,58 +30,43 @@ if ( ! wc_review_ratings_enabled() ) {
 	return;
 }
 
-$untappd_ratings_allow = get_option( 'wc_untappd_ratings_allow', 'no' ) === 'yes' && WC_Untappd_Ratings::api_is_active() ? true : false;
-
-$rating_count = $product->get_rating_count();
-$review_count = $product->get_review_count();
-$average      = $product->get_average_rating();
+$rating_count = (int) $product->get_rating_count();
+$review_count = (int) $product->get_review_count();
+$average      = (float) $product->get_average_rating();
 
 /*
-	Use untappd ratings instead Woocommerce one's.
+	Use untappd ratings instead WooCommerce  one's.
 */
 
-if ( $untappd_ratings_allow ) {
-	$untappd_beer_link          = '#reviews';
-	$untappd_ratings_show_text  = '';
-	$untappd_ratings_show_total = false;
+$wc_untappd_ratings_enabled = wc_untappd_ratings_enabled();
 
-	$beer_id    = absint( $product->get_meta( '_untappd_beer_id', true ) );
-	$product_id = $product->get_id();
+if ( $wc_untappd_ratings_enabled ) {
+	$untappd_beer_link         = '#reviews';
+	$untappd_ratings_show_text = '';
 
-	// Legacy code.
-	if ( ! $beer_id ) {
-		$beer_id = absint( $product->get_attribute( 'untappd_beer_id' ) );
-
-		if ( $beer_id ) {
-			update_post_meta( $product_id, '_untappd_beer_id', $beer_id );
-		}
-	}
+	$beer_id = absint( $product->get_meta( '_untappd_beer_id', true ) );
 
 	if ( $beer_id > 0 ) {
-		$beer_info = WC_Untappd_Ratings::API()->beer_ratings( $beer_id, $product_id );
-		if ( isset( $beer_info['response'] ) && isset( $beer_info['response']['beer'] ) ) {
-			$untappd_beer_link = 'https://untappd.com/b/' . $beer_info['response']['beer']['beer_slug'] . '/' . $beer_id;
+		$product_id = $product->get_id();
 
-			$rating_count = $product->get_meta( '_untappd_rating_count', true );
-			$review_count = absint( $rating_count );
-			$average      = $product->get_meta( '_untappd_average_rating', true );
-		}
+		WC_Untapdd_Product::update_beer_meta( $beer_id, $product_id );
 
-		$untappd_ratings_show_text  = ( get_option( 'wc_untappd_ratings_show_text' ) === 'yes' ) ? number_format_i18n( $average, 2 ) . '/5' : '';
-		$untappd_ratings_show_total = ( get_option( 'wc_untappd_ratings_show_total' ) === 'yes' ) ? true : false;
+		$rating_count = absint( $product->get_meta( '_untappd_rating_count', true ) );
+		$average      = (float) $product->get_meta( '_untappd_average_rating', true );
+		$beer_slug    = $product->get_meta( '_untappd_beer_slug', true );
+
+		$untappd_beer_link         = 'https://untappd.com/b/' . $beer_slug . '/' . $beer_id;
+		$untappd_ratings_show_text = ( wc_untappd_ratings_show_text() ) ? number_format_i18n( $average, 2 ) . '/5' : '';
 	}
 }
 
-if ( $rating_count > 0 && $average > 0 && $untappd_ratings_allow ) : ?>
-
-		<div class="woocommerce-product-rating">
+if ( $rating_count > 0 && $average > 0 && $wc_untappd_ratings_enabled ) : ?>
+	<div class="woocommerce-product-rating">
 		<div><?php esc_html_e( 'Untappd Ratings', 'wc-untappd-ratings' ); ?></div>
 			<?php echo wc_get_rating_html( $average, $rating_count ) . $untappd_ratings_show_text; // PHPCS:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped. ?>
-			<?php //phpcs:disable ?>
-			<?php if ($untappd_ratings_show_total): ?>
-			<a target="_blank" href="<?php echo $untappd_beer_link; ?>" class="woocommerce-review-link" rel="nofollow">(<span class="count"><?php echo esc_html( $review_count );?> ratings</span>)</a>
+			<?php if ( wc_untappd_ratings_show_total() ) : ?>
+			<a target="_blank" href="<?php echo esc_attr( $untappd_beer_link ); ?>" class="woocommerce-review-link" rel="noopener nofollow">(<?php printf( /* translators: %s rating: Total ratings */ _n( '%s rating', '%s ratings', $rating_count, 'wc-untappd-ratings' ), '<span class="count">' . esc_html( $rating_count ) . '</span>' );  // PHPCS:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped. ?>)</a> 
 			<?php endif; ?>
-			<?php // phpcs:enable ?>
 		</div>
 
 <?php elseif ( $rating_count > 0 ) : ?>
