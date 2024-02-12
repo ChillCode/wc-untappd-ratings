@@ -1,25 +1,11 @@
 <?php
 /**
- * Copyright 2021 ChillCode All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * WC_Untappd_Ratings
  *
  * @author    ChillCode
- * @copyright Copyright (c) 2003-2022, ChillCode All rights reserved.
+ * @copyright Copyright (c) 2024, ChillCode All rights reserved.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
- * @package   WooCommerce Untappd
- *
- * WooCommerce and WordPress are property of their respective trademarks owners.
+ * @package   Untappd Ratings for WooCommerce
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -82,7 +68,7 @@ final class WC_Untappd_Ratings {
 					global $pagenow;
 
 					if ( 'plugins.php' === $pagenow ) {
-						printf( '<div class="%1$s"><p>%2$s</p></div>', 'notice notice-error is-dismissible', esc_html__( 'WooCommerce Untappd requires WooCommerce to be installed and active.', 'wc-untappd-ratings' ) );
+						printf( '<div class="%1$s"><p>%2$s</p></div>', 'notice notice-error is-dismissible', esc_html__( 'Untappd Ratings for WooCommerce requires WooCommerce to be installed and active.', 'wc-untappd-ratings' ) );
 					}
 				}
 			);
@@ -154,7 +140,7 @@ final class WC_Untappd_Ratings {
 					global $pagenow;
 
 					if ( 'plugins.php' === $pagenow ) {
-						printf( '<div class="%1$s"><p>%2$s</p></div>', 'notice notice-error is-dismissible', esc_html__( 'Configure Woocommerce Untappd to start using it.', 'wc-untappd-ratings' ) );
+						printf( '<div class="%1$s"><p>%2$s</p></div>', 'notice notice-error is-dismissible', esc_html__( 'Configure Untappd for WooCommerce to start using it.', 'wc-untappd-ratings' ) );
 					}
 				}
 			);
@@ -177,7 +163,7 @@ final class WC_Untappd_Ratings {
 			add_filter(
 				'storefront_credit_links_output',
 				function( $links_output ) {
-					return $links_output . '<div id="powered_by_untappd"><img width="166px" height="40px" src="' . plugin_dir_url( WC_UNTAPPD_RATINGS_PLUGIN_FILE ) . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'powered-by-untappd-logo-40px.png"></div>';
+					return $links_output . '<div id="powered_by_untappd"><img alt="Powered by Untappd" width="166px" height="40px" src="' . plugin_dir_url( WC_UNTAPPD_RATINGS_PLUGIN_FILE ) . 'assets/img/powered-by-untappd-logo-40px.png"></div>';
 				}
 			);
 		}
@@ -291,9 +277,9 @@ final class WC_Untappd_Ratings {
 }
 
 /**
- * Main WooCommerce Instance.
+ * Main Instance.
  *
- * Ensures only one instance of WooCommerce is loaded or can be loaded.
+ * Ensures only one instance of Untappd for WooCommerce is loaded or can be loaded.
  *
  * @since 2.1
  * @static
@@ -351,4 +337,31 @@ function wc_untappd_logger( $message, $level = 'debug' ) {
 	} else {
 		error_log( "WCU error ({$level}): {$message}" ); // PHPCS:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 	}
+}
+
+/**
+ * Check if reviews ratings are enabled.
+ *
+ * @return bool
+ */
+function wc_untappd_ratings_enabled() {
+	return get_option( 'wc_untappd_ratings_enabled' ) === 'yes' && WC_Untappd_Ratings::api_is_active() ? true : false;
+}
+
+/**
+ * Check if to show total ratings.
+ *
+ * @return bool
+ */
+function wc_untappd_ratings_show_total() {
+	return get_option( 'wc_untappd_ratings_show_total' ) === 'yes' ? true : false;
+}
+
+/**
+ * Check if to show total text.
+ *
+ * @return bool
+ */
+function wc_untappd_ratings_show_text() {
+	return get_option( 'wc_untappd_ratings_show_text' ) === 'yes' ? true : false;
 }
