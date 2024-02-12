@@ -1,21 +1,11 @@
 <?php
 /**
- * Copyright (C) 2022 ChillCode
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * WC_Untappd_Settings
  *
  * @author    ChillCode
- * @copyright Copyright (c) 2022, ChillCode All rights reserved.
+ * @copyright Copyright (c) 2024, ChillCode All rights reserved.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
- * @package   WooCommerce Untappd
+ * @package   Untappd Ratings for WooCommerce
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -23,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * WC_Untappd_Settings class.
  */
-class WC_Untappd_Settings extends WC_Settings_API {
+class WC_Untappd_Settings {
 
 	/**
 	 * Constructor.
@@ -38,9 +28,9 @@ class WC_Untappd_Settings extends WC_Settings_API {
 	}
 
 	/**
-	 * Add tab to Woocommerce options tabs.
+	 * Add tab to WooCommerce  options tabs.
 	 *
-	 * @param array $settings_tabs Woocommerce options tabs passed by filter woocommerce_settings_tabs_array.
+	 * @param array $settings_tabs WooCommerce  options tabs passed by filter woocommerce_settings_tabs_array.
 	 */
 	public static function woocommerce_settings_tabs_array( $settings_tabs ) {
 		$settings_tabs['untappd_settings'] = esc_html__( 'Untappd', 'wc-untappd-ratings' );
@@ -69,10 +59,13 @@ class WC_Untappd_Settings extends WC_Settings_API {
 	 * Untappd related settings.
 	 */
 	public static function get_settings() {
+		$ratelimit_remaining = absint( get_option( 'wc_untappd_ratelimit_remaining', true ) );
+
 		$settings[] = array(
 			'title' => __( 'Config Untappd API', 'wc-untappd-ratings' ),
 			'type'  => 'title',
-			'desc'  => 'Config Untappd API',
+			/* translators: %s: API ratelimit remaining */
+			'desc'  => sprintf( __( 'Rate limit remaining per next hour: %s calls', 'woocommerce' ), $ratelimit_remaining ),
 			'id'    => 'wc_untappd_api_settings',
 		);
 
@@ -110,7 +103,7 @@ class WC_Untappd_Settings extends WC_Settings_API {
 			'title'    => __( 'APP Name', 'wc-untappd-ratings' ),
 			'desc'     => __( 'Used to identify the application on the server', 'wc-untappd-ratings' ),
 			'id'       => 'wc_untappd_api_useragent',
-			'default'  => 'Woocommerce Untappd APP Version ' . WC_UNTAPPD_RATINGS_VERSION,
+			'default'  => 'WooCommerce  Untappd APP Version ' . WC_UNTAPPD_RATINGS_VERSION,
 			'type'     => 'text',
 			'desc_tip' => true,
 			'css'      => 'width:240px;',
@@ -140,8 +133,8 @@ class WC_Untappd_Settings extends WC_Settings_API {
 
 		$settings[] = array(
 			'title'    => __( 'Use Untappd ratings', 'wc-untappd-ratings' ),
-			'desc'     => __( 'Overwrite Woocommerce ratings with Untappd one\'s.', 'wc-untappd-ratings' ),
-			'id'       => 'wc_untappd_ratings_allow',
+			'desc'     => __( 'Overwrite WooCommerce  ratings with Untappd one\'s.', 'wc-untappd-ratings' ),
+			'id'       => 'wc_untappd_ratings_enabled',
 			'default'  => 'no',
 			'type'     => 'checkbox',
 			'desc_tip' => true,
@@ -213,68 +206,6 @@ class WC_Untappd_Settings extends WC_Settings_API {
 			'id'   => 'wc_untappd_settings',
 		);
 
-		$settings[] = array(
-			'title' => __( 'Untappd Map Configurtation', 'wc-untappd-ratings' ),
-			'type'  => 'title',
-			'desc'  => 'Configure how Untappd ratings are displayed on the map.',
-			'id'    => 'wc_untappd_settings',
-		);
-
-		$settings[] = array(
-			'title'    => __( 'Brewery ID', 'wc-untappd-ratings' ),
-			'desc'     => __( 'ID of the brewery to get data from', 'wc-untappd-ratings' ),
-			'id'       => 'wc_untappd_map_brewery_id',
-			'default'  => '',
-			'type'     => 'text',
-			'desc_tip' => true,
-			'css'      => 'width:340px;',
-		);
-
-		$settings[] = array(
-			'title'    => __( 'Number of checkins to show on the map', 'wc-untappd-ratings' ),
-			'desc'     => __( 'Number of checkins to show on the map, maximum 300.', 'wc-untappd-ratings' ),
-			'id'       => 'wc_untappd_map_total_checkins',
-			'default'  => '25',
-			'type'     => 'number',
-			'desc_tip' => true,
-			'css'      => 'width:140px;',
-		);
-
-		$settings[] = array(
-			'title'    => __( 'Use Untappd icon', 'wc-untappd-ratings' ),
-			'desc'     => __( 'Use the Untappd icon to mark <i>Checkins</i> on the map.', 'wc-untappd-ratings' ),
-			'id'       => 'wc_untappd_map_use_icon',
-			'default'  => 'no',
-			'type'     => 'checkbox',
-			'desc_tip' => true,
-			'css'      => 'width:140px;',
-		);
-
-		$settings[] = array(
-			'title'    => __( 'Use Custom Icon', 'wc-untappd-ratings' ),
-			'desc'     => __( 'Use a custom icon to mark <i>Checkins</i> on the map.', 'wc-untappd-ratings' ),
-			'id'       => 'wc_untappd_map_use_url_icon',
-			'default'  => '',
-			'type'     => 'text',
-			'desc_tip' => true,
-			'css'      => 'width:340px;',
-		);
-
-		$settings[] = array(
-			'title'    => __( 'Untappd at home default coordinates', 'wc-untappd-ratings' ),
-			'desc'     => __( 'Overwrite the default coordinates for Untappd At Home', 'wc-untappd-ratings' ),
-			'id'       => 'wc_untappd_map_at_home_coordinates',
-			'default'  => '34.2346598,-77.9482096',
-			'type'     => 'text',
-			'desc_tip' => true,
-			'css'      => 'width:240px;',
-		);
-
-		$settings[] = array(
-			'type' => 'sectionend',
-			'id'   => 'wc_untappd_map_settings',
-		);
-
 		return $settings;
 	}
 
@@ -288,17 +219,17 @@ class WC_Untappd_Settings extends WC_Settings_API {
 			"
 			$('#mainform').submit(function()
 				{
-					$('[id^=wc_untappd_ratings]:not(#wc_untappd_ratings_allow)').prop('disabled', false);
+					$('[id^=wc_untappd_ratings]:not(#wc_untappd_ratings_enabled)').prop('disabled', false);
 				}
 			);
 
-			var selector = $('input#wc_untappd_ratings_allow');
+			var selector = $('input#wc_untappd_ratings_enabled');
 
-			$('[id^=wc_untappd_ratings]:not(#wc_untappd_ratings_allow)').prop('disabled', !selector.prop('checked'));
+			$('[id^=wc_untappd_ratings]:not(#wc_untappd_ratings_enabled)').prop('disabled', !selector.prop('checked'));
 
 			selector.on('change', function()
 				{
-					$('[id^=wc_untappd_ratings]:not(#wc_untappd_ratings_allow)').prop('disabled', !this.checked);
+					$('[id^=wc_untappd_ratings]:not(#wc_untappd_ratings_enabled)').prop('disabled', !this.checked);
 				}
 			);
   		"

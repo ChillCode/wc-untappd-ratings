@@ -35,11 +35,8 @@ $wc_untappd_average_rating = 0;
 if ( wc_untappd_ratings_enbaled() ) {
 	$beer_id = absint( $product->get_meta( '_untappd_beer_id', true ) );
 
-	if ( $beer_id > 0 ) {
-		if ( WC_Untappd_Ratings::API()->beer_ratings( $beer_id, $product->get_id() ) ) {
-			$wc_untappd_average_rating = $product->get_meta( '_untappd_average_rating', true );
-		}
-	}
+	$wc_untappd_average_rating = ( $beer_id && WC_Untappd_Ratings::API()->update_beer_meta( $beer_id, $product->get_id() ) ) ? $product->get_meta( '_untappd_average_rating', true ) : 0;
+
 } else {
 	$wc_untappd_average_rating = $product->get_average_rating();
 }
