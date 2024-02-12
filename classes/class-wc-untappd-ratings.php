@@ -148,6 +148,7 @@ final class WC_Untappd_Ratings {
 			add_filter( 'wc_get_template', array( $this, 'global_wc_get_template' ), 11, 5 );
 
 			require_once WC_UNTAPPD_RATINGS_PLUGIN_DIR . 'classes' . DIRECTORY_SEPARATOR . 'class-wc-untappd-error.php';
+			require_once WC_UNTAPPD_RATINGS_PLUGIN_DIR . 'classes' . DIRECTORY_SEPARATOR . 'class-wc-untapdd-checkin.php';
 			require_once WC_UNTAPPD_RATINGS_PLUGIN_DIR . 'classes' . DIRECTORY_SEPARATOR . 'class-wc-untappd-api.php';
 			require_once WC_UNTAPPD_RATINGS_PLUGIN_DIR . 'classes' . DIRECTORY_SEPARATOR . 'class-wc-untapdd-product.php';
 
