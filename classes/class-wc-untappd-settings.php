@@ -28,9 +28,9 @@ class WC_Untappd_Settings {
 	}
 
 	/**
-	 * Add tab to WooCommerce  options tabs.
+	 * Add tab to WooCommerce options tabs.
 	 *
-	 * @param array $settings_tabs WooCommerce  options tabs passed by filter woocommerce_settings_tabs_array.
+	 * @param array $settings_tabs WooCommerce options tabs passed by filter woocommerce_settings_tabs_array.
 	 */
 	public static function woocommerce_settings_tabs_array( $settings_tabs ) {
 		$settings_tabs['untappd_settings'] = esc_html__( 'Untappd', 'wc-untappd-ratings' );
