@@ -165,7 +165,7 @@ class WC_Untapdd_Product {
 
 			$beer_info = WC_Untappd_Ratings::API()->beer_info( $beer_id );
 
-			if ( isset( $beer_info['response']['beer']['rating_count'] ) && isset( $beer_info['response']['beer']['rating_score'] ) ) {
+			if ( ! is_untappd_error( $beer_info ) && isset( $beer_info['response']['beer']['rating_count'] ) && isset( $beer_info['response']['beer']['rating_score'] ) ) {
 				$rating_value = round( (float) $beer_info['response']['beer']['rating_score'], 2 );
 				$review_count = absint( $beer_info['response']['beer']['rating_count'] );
 
@@ -251,7 +251,7 @@ class WC_Untapdd_Product {
 
 		$beer_info = WC_Untappd_Ratings::API()->beer_info( $beer_id );
 
-		if ( isset( $beer_info['response']['beer'] ) ) {
+		if ( ! is_untappd_error( $beer_info ) && isset( $beer_info['response']['beer'] ) ) {
 			$rating_count = ( isset( $beer_info['response']['beer']['rating_count'] ) ) ? absint( $beer_info['response']['beer']['rating_count'] ) : 0;
 			$average      = ( isset( $beer_info['response']['beer']['rating_score'] ) ) ? (float) $beer_info['response']['beer']['rating_score'] : 0;
 			$beer_slug    = ( isset( $beer_info['response']['beer']['beer_slug'] ) ) ? sanitize_text_field( wp_unslash( $beer_info['response']['beer']['beer_slug'] ) ) : '';
@@ -267,5 +267,4 @@ class WC_Untapdd_Product {
 
 		return false;
 	}
-
 }
