@@ -1,21 +1,11 @@
 <?php
 /**
- * Copyright (C) 2022 ChillCode
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * WC_Untappd_API
  *
  * @author    ChillCode
- * @copyright Copyright (c) 2022, ChillCode All rights reserved.
+ * @copyright Copyright (c) 2024, ChillCode All rights reserved.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
- * @package   WooCommerce Untappd
+ * @package   Untappd Ratings for WooCommerce
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -49,9 +39,8 @@ class WC_Untappd_API {
 		$this->untappd_api_url  = $api_url;
 		$this->untappd_app_name = $app_name;
 
-		$untappd_cache_time = get_option( 'wc_untappd_ratings_cache_time', 3 );
-
-		$this->untappd_cache_time = ( ! is_int( $untappd_cache_time ) ) ? 3 * HOUR_IN_SECONDS : absint( $untappd_cache_time ) * HOUR_IN_SECONDS;
+		$this->untappd_cache_time            = absint( get_option( 'wc_untappd_ratings_cache_time', 3 ) * HOUR_IN_SECONDS );
+		$this->untappt_x_ratelimit_remaining = absint( get_option( 'wc_untappd_ratelimit_remaining', 100 ) );
 	}
 
 	/**
@@ -61,7 +50,7 @@ class WC_Untappd_API {
 	 * @param int    $max_id (Optional) The checkin ID that you want the results to start with.
 	 * @param int    $min_id (Optional) Returns only checkins that are newer than this value.
 	 * @param int    $limit (Optional) The number of results to return, max of 50, default is 25.
-	 * @return json|bool
+	 * @return array
 	 */
 	public function activity_feed( string $access_token = '', int $max_id = null, int $min_id = null, int $limit = 25 ) {
 		$untappd_params = array(
@@ -71,9 +60,7 @@ class WC_Untappd_API {
 			( ! is_int( $limit ) ) ? null : 'limit'  => $limit,
 		);
 
-		$activity_feed = $this->get_authenticated( 'checkin/recent', $untappd_params );
-
-		return $this->parse_response( $activity_feed );
+		return $this->get( 'checkin/recent', $untappd_params );
 	}
 
 	/**
@@ -83,7 +70,7 @@ class WC_Untappd_API {
 	 * @param int    $max_id (Optional) The checkin ID that you want the results to start with.
 	 * @param int    $min_id (Optional) Returns only checkins that are newer than this value.
 	 * @param int    $limit (Optional) The number of results to return, max of 25, default is 25.
-	 * @return json|bool
+	 * @return array
 	 */
 	public function user_activity_feed( string $user_name, int $max_id = null, int $min_id = null, int $limit = 25 ) {
 		$untappd_params = array(
@@ -92,9 +79,7 @@ class WC_Untappd_API {
 			( ! is_int( $limit ) ) ? null : 'limit'  => $limit,
 		);
 
-		$user_activity_feed = $this->get( 'user/checkins/' . $user_name, $untappd_params );
-
-		return $this->parse_response( $user_activity_feed );
+		return $this->get( 'user/checkins/' . $user_name, $untappd_params );
 	}
 
 	/**
@@ -106,7 +91,7 @@ class WC_Untappd_API {
 	 * @param int    $max_id (Optional) The checkin ID that you want the results to start with.
 	 * @param int    $min_id (Optional) Returns only checkins that are newer than this value.
 	 * @param int    $limit (Optional) The number of results to return, max of 25, default is 25.
-	 * @return json|bool
+	 * @return array
 	 */
 	public function authenticated_user_activity_feed( string $access_token = '', string $user_name = '', int $max_id = null, int $min_id = null, int $limit = 25 ) {
 		$untappd_params = array(
@@ -116,9 +101,7 @@ class WC_Untappd_API {
 			( ! is_int( $limit ) ) ? null : 'limit'  => $limit,
 		);
 
-		$authenticated_activity_feed = $this->get_authenticated( 'user/checkins/' . $user_name, $untappd_params );
-
-		return $this->parse_response( $authenticated_activity_feed );
+		return $this->get( 'user/checkins/' . $user_name, $untappd_params );
 	}
 
 	/**
@@ -132,7 +115,7 @@ class WC_Untappd_API {
 	 * @param int    $limit (Optional) The number of results to return, max of 25, default is 25.
 	 * @param int    $radius (Optional) The max radius you would like the check-ins to start within, max of 25, default is 25.
 	 * @param string $dist_pref (Optional) If you want the results returned in miles or km. Available options: "m", or "km". Default is "m".
-	 * @return json|bool
+	 * @return array
 	 */
 	public function the_pub_local( float $lat, float $lng, int $max_id = null, int $min_id = null, int $limit = 25, $radius = 25, $dist_pref = 'km' ) {
 		$untappd_params = array(
@@ -145,9 +128,7 @@ class WC_Untappd_API {
 			( ! in_array( strtolower( $dist_pref ), array( 'm', 'km' ), true ) ) ? null : 'dist_pref' => strtolower( $dist_pref ),
 		);
 
-		$the_pub_local = $this->get( 'thepub/local', $untappd_params );
-
-		return $this->parse_response( $the_pub_local );
+		return $this->get( 'thepub/local', $untappd_params );
 	}
 
 	/**
@@ -158,7 +139,7 @@ class WC_Untappd_API {
 	 * @param int $max_id (Optional) The checkin ID that you want the results to start with.
 	 * @param int $min_id (Optional) Returns only checkins that are newer than this value.
 	 * @param int $limit (Optional) The number of results to return, max of 25, default is 25.
-	 * @return json|bool
+	 * @return array
 	 */
 	public function venue_activity_feed( int $venue_id, int $max_id = null, int $min_id = null, int $limit = 25 ) {
 		$untappd_params = array(
@@ -167,9 +148,7 @@ class WC_Untappd_API {
 			( ! is_int( $limit ) ) ? null : 'limit'  => $limit,
 		);
 
-		$venue_activity_feed = $this->get( 'venue/checkins/' . $venue_id, $untappd_params );
-
-		return $this->parse_response( $venue_activity_feed );
+		return $this->get( 'venue/checkins/' . $venue_id, $untappd_params );
 	}
 
 	/**
@@ -180,7 +159,7 @@ class WC_Untappd_API {
 	 * @param int $max_id (Optional) The checkin ID that you want the results to start with.
 	 * @param int $min_id (Optional) Returns only checkins that are newer than this value.
 	 * @param int $limit (Optional) The number of results to return, max of 25, default is 25.
-	 * @return json|bool
+	 * @return array
 	 */
 	public function beer_activity_feed( int $beer_id, int $max_id = null, int $min_id = null, int $limit = 25 ) {
 		$untappd_params = array(
@@ -189,9 +168,7 @@ class WC_Untappd_API {
 			( ! is_int( $limit ) ) ? null : 'limit'  => $limit,
 		);
 
-		$beer_activity_feed = $this->get( 'beer/checkins/' . $beer_id, $untappd_params );
-
-		return $this->parse_response( $beer_activity_feed );
+		return $this->get( 'beer/checkins/' . $beer_id, $untappd_params );
 	}
 
 	/**
@@ -201,7 +178,7 @@ class WC_Untappd_API {
 	 * @param int $max_id (Optional) The checkin ID that you want the results to start with.
 	 * @param int $min_id (Optional) Returns only checkins that are newer than this value.
 	 * @param int $limit (Optional) The number of results to return, max of 25, default is 25.
-	 * @return json|bool
+	 * @return array
 	 */
 	public function brewery_activity_feed( int $brewery_id, int $max_id = null, int $min_id = null, int $limit = 25 ) {
 		$untappd_params = array(
@@ -210,9 +187,7 @@ class WC_Untappd_API {
 			( ! is_int( $limit ) ) ? null : 'limit'  => $limit,
 		);
 
-		$brewery_activity_feed = $this->get( 'brewery/checkins/' . $brewery_id, $untappd_params );
-
-		return $this->parse_response( $brewery_activity_feed );
+		return $this->get( 'brewery/checkins/' . $brewery_id, $untappd_params );
 	}
 
 	/**
@@ -221,7 +196,7 @@ class WC_Untappd_API {
 	 * @param string $access_token (Required) The access token for the acting user.
 	 * @param int    $offset (Optional) The numeric offset that you what results to start.
 	 * @param int    $limit (Optional) The number of records that you will return (max 25, default 25).
-	 * @return json|bool
+	 * @return array
 	 */
 	public function notifications( string $access_token = '', int $offset = null, int $limit = 25 ) {
 		$untappd_params = array(
@@ -230,9 +205,7 @@ class WC_Untappd_API {
 			( ! is_int( $limit ) ) ? null : 'limit'  => $limit,
 		);
 
-		$notifications = $this->get_authenticated( 'notifications', $untappd_params );
-
-		return $this->parse_response( $notifications );
+		return $this->get( 'notifications', $untappd_params );
 	}
 
 	/**
@@ -240,16 +213,14 @@ class WC_Untappd_API {
 	 *
 	 * @param string $user_name (Required) The username that you wish to call the request upon.
 	 * @param bool   $compact (Optional) You can pass "true" here only show the user infomation, and remove the "checkins", "media", "recent_brews", etc attributes.
-	 * @return json|bool
+	 * @return array
 	 */
 	public function user_info( string $user_name, bool $compact = false ) {
 		$untappd_params = array(
 			( false === $compact ) ? null : 'compact' => 'true',
 		);
 
-		$user_info = $this->get( 'user/info/' . $user_name, $untappd_params );
-
-		return $this->parse_response( $user_info );
+		return $this->get( 'user/info/' . $user_name, $untappd_params );
 	}
 
 	/**
@@ -259,7 +230,7 @@ class WC_Untappd_API {
 	 * @param string $access_token (Optional) The access token for the acting user.
 	 * @param string $user_name (Optional) The username that you wish to call the request upon. If you do not provide a username - the feed will return results from the authenticated user (if the access_token is provided).
 	 * @param bool   $compact (Optional) You can pass "true" here only show the user infomation, and remove the "checkins", "media", "recent_brews", etc attributes.
-	 * @return json|bool
+	 * @return array
 	 */
 	public function authenticated_user_info( string $access_token = '', string $user_name = '', bool $compact = false ) {
 		$untappd_params = array(
@@ -267,9 +238,7 @@ class WC_Untappd_API {
 			( false === $compact ) ? null : 'compact' => 'true',
 		);
 
-		$authenticated_user_info = $this->get_authenticated( 'user/info/' . $user_name, $untappd_params );
-
-		return $this->parse_response( $authenticated_user_info );
+		return $this->get( 'user/info/' . $user_name, $untappd_params );
 	}
 
 	/**
@@ -279,7 +248,7 @@ class WC_Untappd_API {
 	 * @param int    $offset (Optional) The numeric offset that you what results to start.
 	 * @param int    $limit (Optional) The number of results to return, max of 50, default is 25.
 	 * @param string $sort (Optional) You can sort the results using these values: date - sorts by date (default), checkin - sorted by highest checkin, highest_rated - sorts by global rating descending order, lowest_rated - sorts by global rating ascending order, highest_abv - highest ABV from the wishlist, lowest_abv - lowest ABV from the wishlist.
-	 * @return json|bool
+	 * @return array
 	 */
 	public function user_wishlist( string $user_name, int $offset = null, int $limit = 25, string $sort = 'date' ) {
 		$untappd_params = array(
@@ -288,9 +257,7 @@ class WC_Untappd_API {
 			( ! in_array( strtolower( $sort ), array( 'date', 'checkin', 'highest_rated', 'lowest_rated', 'highest_abv', 'lowest_abv' ), true ) ) ? null : 'sort' => strtolower( $sort ),
 		);
 
-		$user_wishlist = $this->get( 'user/wishlist/' . $user_name, $untappd_params );
-
-		return $this->parse_response( $user_wishlist );
+		return $this->get( 'user/wishlist/' . $user_name, $untappd_params );
 	}
 
 	/**
@@ -302,7 +269,7 @@ class WC_Untappd_API {
 	 * @param int    $offset (Optional) The numeric offset that you what results to start.
 	 * @param int    $limit (Optional) The number of results to return, max of 50, default is 25.
 	 * @param string $sort (Optional) You can sort the results using these values: date - sorts by date (default), checkin - sorted by highest checkin, highest_rated - sorts by global rating descending order, lowest_rated - sorts by global rating ascending order, highest_abv - highest ABV from the wishlist, lowest_abv - lowest ABV from the wishlist.
-	 * @return json|bool
+	 * @return array
 	 */
 	public function authenticated_user_wishlist( string $access_token = '', string $user_name = '', int $offset = null, int $limit = 25, string $sort = '' ) {
 		$untappd_params = array(
@@ -312,9 +279,7 @@ class WC_Untappd_API {
 			( ! in_array( strtolower( $sort ), array( 'date', 'checkin', 'highest_rated', 'lowest_rated', 'highest_abv', 'lowest_abv' ), true ) ) ? null : 'sort' => strtolower( $sort ),
 		);
 
-		$authenticated_user_wishlist = $this->get_authenticated( 'user/wishlist/' . $user_name, $untappd_params );
-
-		return $this->parse_response( $authenticated_user_wishlist );
+		return $this->get( 'user/wishlist/' . $user_name, $untappd_params );
 	}
 
 	/**
@@ -323,7 +288,7 @@ class WC_Untappd_API {
 	 * @param string $user_name (Required)  The username that you wish to call the request upon.
 	 * @param int    $offset (Optional) The numeric offset that you what results to start.
 	 * @param int    $limit (Optional) The number of records that you will return (max 25, default 25).
-	 * @return json|bool
+	 * @return array
 	 */
 	public function user_friends( string $user_name, int $offset = null, int $limit = 25 ) {
 		$untappd_params = array(
@@ -331,9 +296,7 @@ class WC_Untappd_API {
 			( ! is_int( $limit ) ) ? null : 'limit'  => $limit,
 		);
 
-		$user_friends = $this->get( 'user/friends/' . $user_name, $untappd_params );
-
-		return $this->parse_response( $user_friends );
+		return $this->get( 'user/friends/' . $user_name, $untappd_params );
 	}
 
 	/**
@@ -344,7 +307,7 @@ class WC_Untappd_API {
 	 * @param string $user_name  (Optional) The username that you wish to call the request upon. If you do not provide a username - the feed will return results from the authenticated user (if the access_token is provided).
 	 * @param int    $offset (Optional) The numeric offset that you what results to start.
 	 * @param int    $limit (Optional) The number of records that you will return (max 25, default 25).
-	 * @return json|bool
+	 * @return array
 	 */
 	public function authenticated_user_friends( string $access_token = '', string $user_name = '', int $offset = null, int $limit = 25 ) {
 		$untappd_params = array(
@@ -353,9 +316,7 @@ class WC_Untappd_API {
 			( ! is_int( $limit ) ) ? null : 'limit'  => $limit,
 		);
 
-		$authenticated_user_friends = $this->get_authenticated( 'user/friends/' . $user_name, $untappd_params );
-
-		return $this->parse_response( $authenticated_user_friends );
+		return $this->get( 'user/friends/' . $user_name, $untappd_params );
 	}
 
 	/**
@@ -364,7 +325,7 @@ class WC_Untappd_API {
 	 * @param string $user_name (Required)  The username that you wish to call the request upon.
 	 * @param int    $offset (Optional) The numeric offset that you what results to start.
 	 * @param int    $limit (Optional) The number of records that you will return (max 25, default 25).
-	 * @return json|bool
+	 * @return array
 	 */
 	public function user_badges( string $user_name, int $offset = null, int $limit = 25 ) {
 		$untappd_params = array(
@@ -372,9 +333,7 @@ class WC_Untappd_API {
 			( ! is_int( $limit ) ) ? null : 'limit'  => $limit,
 		);
 
-		$user_badges = $this->get( 'user/badges/' . $user_name, $untappd_params );
-
-		return $user_badges;
+		return $this->get( 'user/badges/' . $user_name, $untappd_params );
 	}
 
 	/**
@@ -385,7 +344,7 @@ class WC_Untappd_API {
 	 * @param string $user_name (Optional) The username that you wish to call the request upon. If you do not provide a username - the feed will return results from the authenticated user (if the access_token is provided).
 	 * @param int    $offset (Optional) The numeric offset that you what results to start.
 	 * @param int    $limit (Optional) The number of records that you will return (max 25, default 25).
-	 * @return json|bool
+	 * @return array
 	 */
 	public function authenticated_user_badges( string $access_token = '', string $user_name = '', int $offset = null, int $limit = 25 ) {
 		$untappd_params = array(
@@ -394,9 +353,7 @@ class WC_Untappd_API {
 			( ! is_int( $limit ) ) ? null : 'limit'  => $limit,
 		);
 
-		$authenticated_user_badges = $this->get_authenticated( 'user/badges/' . $user_name, $untappd_params );
-
-		return $this->parse_response( $authenticated_user_badges );
+		return $this->get( 'user/badges/' . $user_name, $untappd_params );
 	}
 
 	/**
@@ -408,7 +365,7 @@ class WC_Untappd_API {
 	 * @param string $sort (Optional) You can sort the results using these values: date - sorts by date (default), checkin - sorted by highest checkin, highest_rated - sorts by global rating descending order, lowest_rated - sorts by global rating ascending order, highest_abv - highest ABV from the wishlist, lowest_abv - lowest ABV from the wishlist.
 	 * @param string $start_date (Optional) .
 	 * @param string $end_date (Optional) .
-	 * @return json|bool
+	 * @return array
 	 */
 	public function user_beers( string $user_name, int $offset = null, int $limit = 25, string $sort = '', string $start_date = '', string $end_date = '' ) {
 		$untappd_params = array(
@@ -419,9 +376,7 @@ class WC_Untappd_API {
 			( empty( $end_date ) ) ? null : 'end_date'     => $end_date,
 		);
 
-		$user_beers = $this->get( 'user/beers/' . $user_name, $untappd_params );
-
-		return $this->parse_response( $user_beers );
+		return $this->get( 'user/beers/' . $user_name, $untappd_params );
 	}
 
 	/**
@@ -435,7 +390,7 @@ class WC_Untappd_API {
 	 * @param string $sort (Optional) You can sort the results using these values: date - sorts by date (default), checkin - sorted by highest checkin, highest_rated - sorts by global rating descending order, lowest_rated - sorts by global rating ascending order, highest_abv - highest ABV from the wishlist, lowest_abv - lowest ABV from the wishlist.
 	 * @param string $start_date (Optional) .
 	 * @param string $end_date (Optional) .
-	 * @return json|bool
+	 * @return array
 	 */
 	public function authenticated_user_beers( string $access_token = '', string $user_name = '', int $offset = null, int $limit = 25, string $sort = '', string $start_date = '', string $end_date = '' ) {
 		$untappd_params = array(
@@ -447,9 +402,7 @@ class WC_Untappd_API {
 			( empty( $end_date ) ) ? null : 'end_date'     => $end_date,
 		);
 
-		$authenticated_user_beers = $this->get_authenticated( 'user/beers/' . $user_name, $untappd_params );
-
-		return $this->parse_response( $authenticated_user_beers );
+		return $this->get( 'user/beers/' . $user_name, $untappd_params );
 	}
 
 	/**
@@ -457,16 +410,14 @@ class WC_Untappd_API {
 	 *
 	 * @param int  $brewery_id (Required) The Brewery ID that you want to display checkins.
 	 * @param bool $compact (Optional) You can pass "true" here only show the brewery infomation, and remove the "checkins", "media", "beer_list", etc attributes.
-	 * @return json|bool
+	 * @return array
 	 */
 	public function brewery_info( int $brewery_id, bool $compact = false ) {
 		$untappd_params = array(
 			( false === $compact ) ? null : 'compact' => 'true',
 		);
 
-		$brewery_info = $this->get( 'brewery/info/' . $brewery_id, $untappd_params );
-
-		return $this->parse_response( $brewery_info );
+		return $this->get( 'brewery/info/' . $brewery_id, $untappd_params );
 	}
 
 	/**
@@ -474,50 +425,14 @@ class WC_Untappd_API {
 	 *
 	 * @param int  $beer_id (Required) The Beer ID that you want to display checkins.
 	 * @param bool $compact (Optional) You can pass "true" here only show the beer infomation, and remove the "checkins", "media", "variants", etc attributes.
-	 * @return json|bool
+	 * @return array
 	 */
 	public function beer_info( int $beer_id, bool $compact = false ) {
 		$untappd_params = array(
 			( false === $compact ) ? null : 'compact' => 'true',
 		);
 
-		$beer_info = $this->get( 'beer/info/' . $beer_id, $untappd_params );
-
-		return $this->parse_response( $beer_info );
-	}
-
-	/**
-	 * This method will allow you to see extended information about a beer.
-	 *
-	 * @param int  $beer_id (Required) The Beer ID that you want to display checkins.
-	 * @param int  $product_id (Required) The Product ID that you want to update with ratings.
-	 * @param bool $compact (Optional) You can pass "true" here only show the beer infomation, and remove the "checkins", "media", "variants", etc attributes.
-	 * @return json|bool
-	 */
-	public function beer_ratings( int $beer_id, int $product_id, bool $compact = false ) {
-		$untappd_params = array(
-			( false === $compact ) ? null : 'compact' => 'true',
-		);
-
-		$cache_key = 'wc_untappd_get_' . hash( 'md5', 'beer/info/' . wp_json_encode( $untappd_params ) );
-
-		$cache_data = get_transient( $cache_key );
-
-		if ( false !== $cache_data ) {
-			return $this->parse_response( $cache_data );
-		}
-
-		$beer_info = $this->beer_info( $beer_id, $compact );
-
-		if ( isset( $beer_info['response'] ) && isset( $beer_info['response']['beer'] ) ) {
-			$rating_count = ( isset( $beer_info['response']['beer']['rating_count'] ) ) ? $beer_info['response']['beer']['rating_count'] : 0;
-			$average      = ( isset( $beer_info['response']['beer']['rating_score'] ) ) ? $beer_info['response']['beer']['rating_score'] : 0;
-
-			update_post_meta( $product_id, '_untappd_rating_count', $rating_count );
-			update_post_meta( $product_id, '_untappd_average_rating', $average );
-		}
-
-		return $beer_info;
+		return $this->get( 'beer/info/' . $beer_id, $untappd_params );
 	}
 
 	/**
@@ -525,16 +440,14 @@ class WC_Untappd_API {
 	 *
 	 * @param int  $venue_id (Required) The Venue ID that you want to display checkins.
 	 * @param bool $compact (Optional) You can pass "true" here only show the venue infomation, and remove the "checkins", "media", "top_beers", etc attributes.
-	 * @return json|bool
+	 * @return array
 	 */
 	public function venue_info( int $venue_id, bool $compact = false ) {
 		$untappd_params = array(
 			( false === $compact ) ? null : 'compact' => 'true',
 		);
 
-		$venue_info = $this->get( 'beer/info/' . $venue_id, $untappd_params );
-
-		return $this->parse_response( $venue_info );
+		return $this->get( 'beer/info/' . $venue_id, $untappd_params );
 	}
 
 	/**
@@ -545,7 +458,7 @@ class WC_Untappd_API {
 	 * @param int    $offset (Optional) The numeric offset that you what results to start.
 	 * @param int    $limit (Optional) The number of results to return, max of 50, default is 25.
 	 * @param string $sort (Optional) Your can sort the results using these values: checkin - sorts by checkin count (default), name - sorted by alphabetic beer name.
-	 * @return json|bool
+	 * @return array
 	 */
 	public function beer_search( string $q, int $offset = null, int $limit = 25, string $sort = '' ) {
 		$untappd_params = array(
@@ -555,9 +468,7 @@ class WC_Untappd_API {
 			( ! in_array( strtolower( $sort ), array( 'checkin', 'name' ), true ) ) ? null : 'sort' => strtolower( $sort ),
 		);
 
-		$beer_search = $this->get( 'search/beer', $untappd_params );
-
-		return $this->parse_response( $beer_search );
+		return $this->get( 'search/beer', $untappd_params );
 	}
 
 	/**
@@ -566,7 +477,7 @@ class WC_Untappd_API {
 	 * @param string $q (Required) The search term that you want to search.
 	 * @param int    $offset (Optional) The numeric offset that you what results to start.
 	 * @param int    $limit (Optional) The number of results to return, max of 50, default is 25.
-	 * @return json|bool
+	 * @return array
 	 */
 	public function brewery_search( string $q, int $offset = null, int $limit = 25 ) {
 		$untappd_params = array(
@@ -575,9 +486,7 @@ class WC_Untappd_API {
 			( ! is_int( $limit ) ) ? null : 'limit'  => $limit,
 		);
 
-		$brewery_search = $this->get( 'search/brewery', $untappd_params );
-
-		return $this->parse_response( $brewery_search );
+		return $this->get( 'search/brewery', $untappd_params );
 	}
 
 	/**
@@ -585,12 +494,10 @@ class WC_Untappd_API {
 	 * Note: It's possible that you could pass through a foursquare venue ID, and not get back a "venue" object in the response. This can be due to many reasons, but mainly due to a Foursquare connectivity issue. Your app or service should never depending on a one-to-one match on the foursquare ID send, and a venue object returned as part of the response. Always do a null check to make sure that the object's attributes exists before digging.
 	 *
 	 * @param WC_Untapdd_Checkin $untappd_params (Required).
-	 * @return json|bool
+	 * @return array
 	 */
 	public function checkin_add( WC_Untapdd_Checkin $untappd_params ) {
-		$checkin_add = $this->post_authenticated( 'checkin/add', $untappd_params );
-
-		return $this->parse_response( $checkin_add );
+		return $this->post( 'checkin/add', $untappd_params );
 	}
 
 	/**
@@ -599,16 +506,14 @@ class WC_Untappd_API {
 	 *
 	 * @param int    $checkin_id (Required) The checkin ID of checkin you want to toast.
 	 * @param string $access_token (Optional) The access token for the acting user.
-	 * @return json|bool
+	 * @return array
 	 */
 	public function toast_untoast_checkin( int $checkin_id, string $access_token = '' ) {
 		$untappd_params = array(
 			( empty( $access_token ) ) ? null : 'access_token' => $access_token,
 		);
 
-		$toast_untoast_checkin = $this->post_authenticated( 'checkin/toast/' . $checkin_id, $untappd_params );
-
-		return $this->parse_response( $toast_untoast_checkin );
+		return $this->post( 'checkin/toast/' . $checkin_id, $untappd_params );
 	}
 
 	/**
@@ -617,7 +522,7 @@ class WC_Untappd_API {
 	 * @param string $access_token (Optional) The access token for the acting user.
 	 * @param int    $offset (Optional) The numeric offset that you what results to start.
 	 * @param int    $limit (Optional) The number of results to return. (default is all).
-	 * @return json|bool
+	 * @return array
 	 */
 	public function pending_friends( string $access_token = '', int $offset = null, int $limit = null ) {
 		$untappd_params = array(
@@ -626,9 +531,7 @@ class WC_Untappd_API {
 			( ! is_int( $limit ) ) ? null : 'limit'  => $limit,
 		);
 
-		$pending_friends = $this->get_authenticated( 'user/pending', $untappd_params );
-
-		return $this->parse_response( $pending_friends );
+		return $this->get( 'user/pending', $untappd_params );
 	}
 
 	/**
@@ -637,16 +540,14 @@ class WC_Untappd_API {
 	 * @param int    $target_id (Required) The target user id that you wish to accept.
 	 * @param string $access_token (Optional) The access token for the acting user.
 	 *
-	 * @return json|bool
+	 * @return array
 	 */
 	public function request_friend( int $target_id, string $access_token = '' ) {
 		$untappd_params = array(
 			( empty( $access_token ) ) ? null : 'access_token' => $access_token,
 		);
 
-		$request_friend = $this->get_authenticated( 'friend/request/' . $target_id, $untappd_params );
-
-		return $this->parse_response( $request_friend );
+		return $this->get( 'friend/request/' . $target_id, $untappd_params );
 	}
 
 	/**
@@ -655,16 +556,14 @@ class WC_Untappd_API {
 	 * @param int    $target_id (Required) The target user id that you wish to accept.
 	 * @param string $access_token (Optional) The access token for the acting user.
 	 *
-	 * @return json|bool
+	 * @return array
 	 */
 	public function remove_friend( int $target_id, string $access_token = '' ) {
 		$untappd_params = array(
 			( empty( $access_token ) ) ? null : 'access_token' => $access_token,
 		);
 
-		$remove_friend = $this->get_authenticated( 'friend/remove/' . $target_id, $untappd_params );
-
-		return $this->parse_response( $remove_friend );
+		return $this->get( 'friend/remove/' . $target_id, $untappd_params );
 	}
 
 	/**
@@ -673,16 +572,14 @@ class WC_Untappd_API {
 	 * @param int    $target_id (Required) The target user id that you wish to accept.
 	 * @param string $access_token (Optional) The access token for the acting user.
 	 *
-	 * @return json|bool
+	 * @return array
 	 */
 	public function accept_friend( int $target_id, string $access_token = '' ) {
 		$untappd_params = array(
 			( empty( $access_token ) ) ? null : 'access_token' => $access_token,
 		);
 
-		$accept_friend = $this->get_authenticated( 'friend/accept/' . $target_id, $untappd_params );
-
-		return $this->parse_response( $accept_friend );
+		return $this->get( 'friend/accept/' . $target_id, $untappd_params );
 	}
 
 	/**
@@ -691,16 +588,14 @@ class WC_Untappd_API {
 	 * @param int    $target_id (Required) The target user id that you wish to accept.
 	 * @param string $access_token (Optional) The access token for the acting user.
 	 *
-	 * @return json|bool
+	 * @return array
 	 */
 	public function reject_friend( int $target_id, string $access_token = '' ) {
 		$untappd_params = array(
 			( empty( $access_token ) ) ? null : 'access_token' => $access_token,
 		);
 
-		$reject_friend = $this->get_authenticated( 'friend/reject/' . $target_id, $untappd_params );
-
-		return $this->parse_response( $reject_friend );
+		return $this->get( 'friend/reject/' . $target_id, $untappd_params );
 	}
 
 	/**
@@ -710,7 +605,7 @@ class WC_Untappd_API {
 	 * @param string $comment Required. The text of the comment you want to add. Max of 140 characters.
 	 * @param string $access_token (Optional) The access token for the acting user.
 	 *
-	 * @return json|bool
+	 * @return array
 	 */
 	public function add_comment( int $checkin_id, string $comment, string $access_token = '' ) {
 		$untappd_params = array(
@@ -718,9 +613,7 @@ class WC_Untappd_API {
 			( empty( $comment ) ) ? null : 'comment' => $comment,
 		);
 
-		$add_comment = $this->post_authenticated( 'checkin/addcomment/' . $checkin_id, $untappd_params );
-
-		return $this->parse_response( $add_comment );
+		return $this->post( 'checkin/addcomment/' . $checkin_id, $untappd_params );
 	}
 
 	/**
@@ -729,16 +622,14 @@ class WC_Untappd_API {
 	 * @param int    $comment_id (Required) The comment ID of comment you want to delete.
 	 * @param string $access_token (Optional) The access token for the acting user.
 	 *
-	 * @return json|bool
+	 * @return array
 	 */
 	public function delete_comment( int $comment_id, string $access_token = '' ) {
 		$untappd_params = array(
 			( empty( $access_token ) ) ? null : 'access_token' => $access_token,
 		);
 
-		$delete_comment = $this->post_authenticated( 'checkin/deletecomment/' . $comment_id, $untappd_params );
-
-		return $this->parse_response( $delete_comment );
+		return $this->post( 'checkin/deletecomment/' . $comment_id, $untappd_params );
 	}
 
 	/**
@@ -747,7 +638,7 @@ class WC_Untappd_API {
 	 * @param int    $beer_id (Required) The numeric BID of the beer you want to add your list.
 	 * @param string $access_token (Optional) The access token for the acting user.
 	 *
-	 * @return json|bool
+	 * @return array
 	 */
 	public function add_to_wishlist( int $beer_id, string $access_token = '' ) {
 		$untappd_params = array(
@@ -755,9 +646,7 @@ class WC_Untappd_API {
 			( empty( $access_token ) ) ? null : 'access_token' => $access_token,
 		);
 
-		$add_to_wishlist = $this->get_authenticated( 'user/wishlist/add', $untappd_params );
-
-		return $this->parse_response( $add_to_wishlist );
+		return $this->get( 'user/wishlist/add', $untappd_params );
 	}
 
 	/**
@@ -766,7 +655,7 @@ class WC_Untappd_API {
 	 * @param int    $beer_id (Required) The numeric BID of the beer you want to remove from your list.
 	 * @param string $access_token (Optional) The access token for the acting user.
 	 *
-	 * @return json|bool
+	 * @return array
 	 */
 	public function remove_from_wishlist( int $beer_id, string $access_token = '' ) {
 		$untappd_params = array(
@@ -774,9 +663,7 @@ class WC_Untappd_API {
 			( empty( $access_token ) ) ? null : 'access_token' => $access_token,
 		);
 
-		$remove_from_wishlist = $this->get_authenticated( 'user/wishlist/delete', $untappd_params );
-
-		return $this->parse_response( $remove_from_wishlist );
+		return $this->get( 'user/wishlist/delete', $untappd_params );
 	}
 
 	/**
@@ -784,12 +671,10 @@ class WC_Untappd_API {
 	 *
 	 * @param int $venue_id (Required) The foursquare venue v2 ID that you wish to translate into a Untappd venue ID.
 	 *
-	 * @return json|bool
+	 * @return array
 	 */
 	public function foursquare_lookup( int $venue_id ) {
-		$foursquare_lookup = $this->get( 'venue/foursquare_lookup/' . $venue_id );
-
-		return $this->parse_response( $foursquare_lookup );
+		return $this->get( 'venue/foursquare_lookup/' . $venue_id );
 	}
 
 	/**
@@ -801,9 +686,9 @@ class WC_Untappd_API {
 	 *
 	 * @return mixed JSON|WC_Untappd_Error
 	 */
-	public function get( string $untappd_method, array $untappd_params = array(), int $cache_time = null ) {
+	private function get( string $untappd_method, array $untappd_params = array(), int $cache_time = null ) {
 		if ( empty( $untappd_method ) ) {
-			return new WC_Untappd_Error( '_invalid_method', __( 'Empty method passed.', 'wc-untappd-ratings' ), 400 );
+			return new WC_Untappd_Error( '_invalid_method', __( 'Invalid method passed.', 'wc-untappd-ratings' ), 400 );
 		}
 
 		$untappd_params = wp_parse_args(
@@ -820,32 +705,50 @@ class WC_Untappd_API {
 		}
 
 		$arguments = array(
-			'timeout' => 5,
+			'timeout' => 2,
 			'headers' => array(
 				'User-Agent' => $this->untappd_app_name,
 			),
 		);
 
 		$response_data = wp_safe_remote_get( $this->untappd_api_url . $untappd_method . '?' . http_build_query( $untappd_params ), $arguments );
+
+		/**
+		 * Set API remaining limit.
+		 */
+		$response_remaining = wp_remote_retrieve_header( $response_data, 'x-ratelimit-remaining' );
+
+		if ( $response_remaining ) {
+			$this->untappt_x_ratelimit_remaining = $response_remaining;
+
+			update_option( 'wc_untappd_ratelimit_remaining', $this->untappt_x_ratelimit_remaining );
+		}
+
 		$response_code = wp_remote_retrieve_response_code( $response_data );
 
 		if ( 200 !== (int) $response_code ) {
-			return new WC_Untappd_Error( '_invalid_response_code', $response_code, 400 );
+			return new WC_Untappd_Error( $response_code, '_invalid_response_code', $response_code );
 		}
 
 		$response_data_body = wp_remote_retrieve_body( $response_data );
 
 		if ( empty( $response_data_body ) ) {
-			return new WC_Untappd_Error( '_invalid_response_body', $this->untappt_x_ratelimit_remaining, 400 );
+			return new WC_Untappd_Error( $response_code, '_invalid_response_body', $response_code );
 		}
 
-		$this->untappt_x_ratelimit_remaining = wp_remote_retrieve_header( $response_data, 'x-ratelimit-remaining' );
+		$response_data_body_ary = json_decode( $response_data_body, true );
 
-		update_option( 'wc_untappd_ratelimit_remaining', $this->untappt_x_ratelimit_remaining );
+		if ( json_last_error() !== JSON_ERROR_NONE || ! isset( $response_data_body_ary['meta']['code'] ) ) {
+			return new WC_Untappd_Error( $response_code, '_invalid_response_json', $response_code );
+		}
 
-		set_transient( $cache_key, $response_data_body, $this->get_cache_time( $cache_time ) );
+		if ( 200 !== (int) $response_data_body_ary['meta']['code'] ) {
+			return new WC_Untappd_Error( $response_code, '_invalid_response_untappd_code', $response_data_body_ary['meta']['code'] );
+		}
 
-		return $response_data_body;
+		set_transient( $cache_key, $response_data_body_ary, $cache_time );
+
+		return $response_data_body_ary;
 	}
 
 	/**
@@ -856,7 +759,7 @@ class WC_Untappd_API {
 	 *
 	 * @return json|WC_Untappd_Error
 	 */
-	public function post_authenticated( string $untappd_method, array $untappd_params = array() ) {
+	private function post( string $untappd_method, array $untappd_params = array() ) {
 		$arguments = array(
 			'timeout' => 5,
 			'headers' => array(
@@ -865,98 +768,42 @@ class WC_Untappd_API {
 			'body'    => $untappd_params,
 		);
 
-		$untappd_params = array();
+		$response_data = wp_safe_remote_post( $this->untappd_api_url . $untappd_method . '?' . http_build_query( $untappd_params['access_token'] ), $arguments );
 
-		$untappd_params['access_token'] = get_option( '_untappd_connect_access_token', false );
+		/**
+		 * Set API remaining limit.
+		 */
+		$response_remaining = wp_remote_retrieve_header( $response_data, 'x-ratelimit-remaining' );
 
-		$response_data      = wp_safe_remote_post( $this->untappd_api_url . $untappd_method . '?' . http_build_query( $untappd_params ), $arguments );
-		$response_data_body = wp_remote_retrieve_body( $response_data );
+		if ( $response_remaining ) {
+			$this->untappt_x_ratelimit_remaining = $response_remaining;
 
-		if ( empty( $response_data_body ) ) {
-			return false;
+			update_option( 'wc_untappd_ratelimit_remaining', $this->untappt_x_ratelimit_remaining );
 		}
 
-		$this->untappt_x_ratelimit_remaining = wp_remote_retrieve_header( $response_data, 'x-ratelimit-remaining' );
-
-		update_option( 'wc_untappd_ratelimit_remaining', $this->untappt_x_ratelimit_remaining );
-
-		return $response_data_body;
-	}
-
-	/**
-	 * GET as authenticated user.
-	 *
-	 * @param string $untappd_method The API request.
-	 * @param array  $untappd_params The API request params.
-	 * @param int    $cache_time (Optional) The time the returned data will persist on the cache.
-	 *
-	 * @return json|WC_Untappd_Error
-	 */
-	public function get_authenticated( string $untappd_method, array $untappd_params = array(), int $cache_time = null ) {
-		if ( empty( $untappd_method ) ) {
-			return new WC_Untappd_Error( '_invalid_method', __( 'Empty method passed.', 'wc-untappd-ratings' ), 400 );
-		}
-
-		$cache_key = 'wc_untappd_get_authenticated_' . hash( 'md5', $untappd_method . wp_json_encode( $untappd_params ) );
-
-		$cache_data = get_transient( $cache_key );
-
-		if ( false !== $cache_data ) {
-			return $cache_data;
-		}
-
-		$untappd_default_params['access_token'] = get_option( '_untappd_connect_access_token', false );
-
-		$untappd_params = wp_parse_args(
-			$untappd_params,
-			$this->untappd_params
-		);
-
-		$arguments = array(
-			'timeout'     => 5,
-			'httpversion' => '1.1',
-			'headers'     => array(
-				'User-Agent' => $this->untappd_app_name,
-			),
-		);
-
-		$response_data = wp_safe_remote_get( $this->untappd_api_url . $untappd_method . '?' . http_build_query( $untappd_params ), $arguments );
 		$response_code = wp_remote_retrieve_response_code( $response_data );
 
 		if ( 200 !== (int) $response_code ) {
-			return new WC_Untappd_Error( '_invalid_response_code', $response_code, 400 );
+			return new WC_Untappd_Error( $response_code, '_invalid_response_code', $response_code );
 		}
 
 		$response_data_body = wp_remote_retrieve_body( $response_data );
 
 		if ( empty( $response_data_body ) ) {
-			return new WC_Untappd_Error( '_invalid_response', $response_data, 400 );
+			return new WC_Untappd_Error( $response_code, '_invalid_response_body', $response_code );
 		}
 
-		$this->untappt_x_ratelimit_remaining = wp_remote_retrieve_header( $response_data, 'x-ratelimit-remaining' );
+		$response_data_body_ary = json_decode( $response_data_body, true );
 
-		update_option( 'wc_untappd_ratelimit_remaining', $this->untappt_x_ratelimit_remaining );
-
-		set_transient( $cache_key, $response_data_body, $this->get_cache_time( $cache_time ) );
-
-		return $response_data_body;
-	}
-
-	/**
-	 * Parse response data, if error return empty object else return decoded data.
-	 *
-	 * @param mixed $data The data to parse.
-	 *
-	 * @return json|WC_Untappd_Error
-	 */
-	private function parse_response( $data ) {
-		if ( $data instanceof WC_Untappd_Error ) {
-			return '{}';
-		} else {
-			$response = json_decode( $data, true );
+		if ( json_last_error() !== JSON_ERROR_NONE || ! isset( $response_data_body_ary['meta']['code'] ) ) {
+			return new WC_Untappd_Error( $response_code, '_invalid_response_json', $response_code );
 		}
 
-		return $response;
+		if ( 200 !== (int) $response_data_body_ary['meta']['code'] ) {
+			return new WC_Untappd_Error( $response_code, '_invalid_response_untappd_code', $response_data_body_ary['meta']['code'] );
+		}
+
+		return $response_data_body_ary;
 	}
 
 	/**
@@ -964,20 +811,17 @@ class WC_Untappd_API {
 	 *
 	 * @return int
 	 */
-	public function get_limit() {
-		return $this->untappt_x_ratelimit_remaining;
+	public function get_limit() : int {
+		return absint( $this->untappt_x_ratelimit_remaining );
 	}
 
 	/**
 	 * Get the time data will last into the cache.
 	 *
-	 * @param int $cache_time (Optional) The time the returned data will persist on the cache.
-	 *
 	 * @return int
 	 */
-	public function get_cache_time( int $cache_time = null ) {
-		$cache_time = ( is_null( $cache_time ) || ! is_integer( $cache_time ) ) ? $this->untappd_cache_time : $cache_time;
+	public function get_cache_time() : int {
 
-		return $cache_time;
+		return absint( $this->untappd_cache_time );
 	}
 }
