@@ -26,71 +26,21 @@ Easy way to add a map using a shortcode:
 
 [wc_untappd_map api_key="GOOGLE_API_KEY" brewery_id="73836" center_map="yes" height="500" max_checkins="300" zoom="4"]
 
-###### Google Javascript Maps API key.
-Default ""
-api_key=""
-
-### Brewery ID to show on map
-### Default "0"
-
-brewery_id="0"
-
-### Center map
-### Default "yes"
-
-center_map="yes"
-
-### Google map height.
-### Default "500"
-
-height="500"
-
-### Untapp at home default coordinates.
-### Default "34.2346598,-77.9482096"
-
-lat_lng="34.2346598,-77.9482096"
-
-### Map div class.
-### Default ""
-
-map_class=""
-
-### Map div ID.
-### Default ""
-
-map_id=""
-
-### Map div style.
-### Default ""
-
-map_style=""
-
-### Show an interactive or static map.
-### To use static map it's required to enable staticmap API.
-### Default "interactive"
-
-map_type="interactive"
-
-### Use Untapp icon to mark checkins on the map.
-### Default "true"
-
-map_use_icon="true"
-
-### Use your own icon url.
-### Default ""
-
-map_use_url_icon=""
-
-### Checkins to show on the map.
-### Max checkins to show are 300.
-### Default "25"
-
-max_checkins="25"
-
-### Map zoom.
-### Default "4"
-
-zoom="4"
+| Attribute  | Description | Default |
+| ------------- | ------------- | ------------- |
+| api_ke  | Google Javascript Maps API key.  | "" |
+| brewery_id  | Brewery ID to show on map.  | "0" |
+| center_map=""  | Center map.  | "no" |
+| height  | Google map height.  | "500" |
+| lat_lng  | Untappd at home default coordinates.  | "34.2346598,-77.9482096" |
+| map_class  | Map div class.  | "" |
+| map_id  | Map div ID.  | "" |
+| map_style  | Map div style.  | "" |
+| map_type  | Show an "interactive" or "static" map. To use "static" map it's required to enable staticmap API.  | "interactive" |
+| map_use_icon  | Use Untappd icon to mark checkins on the map.  | "true" |
+| map_use_url_icon  | Use your own icon url.  | "" |
+| max_checkins  | Use your own icon url.  | "25" |
+| zoom  | Use your own icon url.  | "4" |
 
 ## Add Ratings to Structured Data
 
