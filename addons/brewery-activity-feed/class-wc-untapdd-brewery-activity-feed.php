@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (C) 2022 ChillCode
+ * Copyright (C) 2024 ChillCode
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * @author    ChillCode
- * @copyright Copyright (c) 2022, ChillCode All rights reserved.
+ * @copyright Copyright (c) 2024, ChillCode All rights reserved.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  * @package   WooCommerce Untappd
  */
@@ -59,26 +59,25 @@ class WC_Untapdd_Brewery_Activity_Feed {
 	 * Display a map with checkins.
 	 *
 	 * @param array $atts (Required) Shortcode attributes.
-	 * @param array $content (Optional) Shortcode attributes.
-	 * @param array $code (Optional) Shortcode attributes.
 	 */
-	public function wc_untappd_map_sc( $atts, $content = null, $code = '' ) {
+	public function wc_untappd_map_sc( $atts ) {
 		$atts = shortcode_atts(
 			apply_filters(
 				'wc_untappd_map_atts',
 				array(
 					'api_key'          => '',
-					'zoom'             => 14,
+					'zoom'             => 4,
 					'height'           => '500',
-					'custom_style'     => '',
 					'map_type'         => 'interactive',
-					'brewery_id'       => get_option( 'wc_untappd_map_brewery_id', '' ),
-					'max_checkins'     => get_option( 'wc_untappd_map_total_checkins', 25 ),
-					'center_map'       => '',
+					'brewery_id'       => 1,
+					'max_checkins'     => 25,
+					'center_map'       => 'yes',
 					'lat_lng'          => '',
-					'map_use_icon'     => get_option( 'wc_untappd_map_use_icon', 'no' ) === 'yes' ? true : false,
-					'map_use_url_icon' => get_option( 'wc_untappd_map_use_url_icon', null ),
-					'el_style'         => '',
+					'map_use_icon'     => true,
+					'map_use_url_icon' => false,
+					'map_style'        => '',
+					'map_class'        => '',
+					'map_id'           => '',
 				)
 			),
 			$atts,
@@ -89,8 +88,8 @@ class WC_Untapdd_Brewery_Activity_Feed {
 
 		$class = array( $class_master );
 
-		if ( ! empty( $atts['el_class'] ) ) {
-			$class[] = $atts['el_class'];
+		if ( ! empty( $atts['map_class'] ) ) {
+			$class[] = $atts['map_class'];
 		}
 
 		if ( 'yes_no_overlay' === $atts['center_map'] ) {
@@ -102,13 +101,13 @@ class WC_Untapdd_Brewery_Activity_Feed {
 		}
 
 		$id_attr = '';
-		if ( ! empty( $atts['el_id'] ) ) {
-			$id_attr = ' id="' . esc_attr( $atts['el_id'] ) . '"';
+		if ( ! empty( $atts['map_id'] ) ) {
+			$id_attr = ' id="' . esc_attr( $atts['map_id'] ) . '"';
 		}
 
 		$style_attr = '';
-		if ( ! empty( $atts['el_style'] ) ) {
-			$style_attr = ' style="' . esc_attr( $atts['el_style'] ) . '"';
+		if ( ! empty( $atts['map_style'] ) ) {
+			$style_attr = ' style="' . esc_attr( $atts['map_style'] ) . '"';
 		}
 
 		if ( ! empty( $atts['api_key'] ) ) {
@@ -117,7 +116,7 @@ class WC_Untapdd_Brewery_Activity_Feed {
 				'https://maps.googleapis.com/maps/api/js?key=' . esc_attr( $atts['api_key'] ) . '&language=' . apply_filters( 'wpml_current_language', get_locale() ),
 				array(),
 				WC_UNTAPPD_RATINGS_VERSION,
-				true
+				array( 'strategy' => 'async' )
 			);
 		} else {
 			wp_enqueue_script(
@@ -131,38 +130,6 @@ class WC_Untapdd_Brewery_Activity_Feed {
 
 		$this->wc_untappd_enqueue_js();
 
-		if ( 'static' === $atts['map_type'] && ! empty( $atts['custom_style'] ) ) {
-			$_custom_feature = '';
-			// PHPCS:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
-			$_custom_style = base64_decode( $atts['custom_style'] );
-			if ( $_custom_style ) {
-				$_custom_style_array = json_decode( $_custom_style, true );
-				if ( $_custom_style_array ) {
-					foreach ( $_custom_style_array as $feature ) {
-						if ( isset( $feature['featureType'] ) ) {
-							$_custom_feature .= '&style=feature:' . $feature['featureType'] . '%7C';
-							if ( isset( $feature['elementType'] ) ) {
-								$_custom_feature .= 'element:' . $feature['elementType'] . '%7C';
-							}
-							if ( isset( $feature['stylers'] ) ) {
-								foreach ( $feature['stylers'] as $styler ) {
-									foreach ( $styler as $style => $value ) {
-										$_custom_feature .= $style . ':' . ( ( 'color' === $style ) ? rawurlencode( str_replace( '#', '0x', $value ) ) : $value ) . '%7C';
-									}
-								}
-							}
-						}
-					}
-					$atts['custom_style'] = $_custom_feature;
-					unset( $_custom_style_array, $_custom_feature, $_custom_style );
-				} else {
-					$atts['custom_style'] = '';
-				}
-			} else {
-				$atts['custom_style'] = '';
-			}
-		}
-
 		$style_height = '';
 
 		if ( ! empty( $atts['height'] ) && 'interactive' === $atts['map_type'] ) {
@@ -171,14 +138,14 @@ class WC_Untapdd_Brewery_Activity_Feed {
 
 		$at_home_coordinates = $this->get_home_coordinates( $atts['lat_lng'] );
 
-		$map_id = uniqid( 'map_canvas' );
+		$map_id = uniqid( 'untappd_map_canvas_' );
 
 		$class = apply_filters( 'wc_untappd_map_class', $class, $atts );
 
 		$output = '<div class="' . esc_attr( $class_master ) . '" id="' . esc_attr( $map_id ) . '"' . $style_height . '></div>';
 		$output = '<div' . $id_attr . ' class="' . esc_attr( implode( ' ', $class ) ) . '"' . $style_attr . '>' . $output . '</div>';
 
-		$output_script = 'jQuery(' . esc_attr( $map_id ) . ').UntappdMap({map_type: "' . esc_attr( $atts['map_type'] ) . '", max_checkins: ' . absint( $atts['max_checkins'] ) . ', map_use_icon: ' . (int) $atts['map_use_icon'] . ', map_use_url_icon: "' . esc_attr( $atts['map_use_url_icon'] ) . '", center_lat: "' . esc_attr( $at_home_coordinates['lat'] ) . '", center_lng: "' . esc_attr( $at_home_coordinates['lng'] ) . '", center_map: "' . esc_attr( $atts['center_map'] ) . '", zoom: ' . intval( $atts['zoom'] ) . ', custom_style:  "' . esc_attr( $atts['custom_style'] ) . '", height: ' . intval( $atts['height'] ) . ', brewery_id: ' . intval( $atts['brewery_id'] ) . ', api_key: "' . esc_attr( $atts['api_key'] ) . '"});';
+		$output_script = 'jQuery(' . esc_attr( $map_id ) . ').UntappdMap({map_type: "' . esc_attr( $atts['map_type'] ) . '", max_checkins: ' . absint( $atts['max_checkins'] ) . ', map_use_icon: ' . (int) $atts['map_use_icon'] . ', map_use_url_icon: "' . esc_attr( $atts['map_use_url_icon'] ) . '", center_lat: "' . esc_attr( $at_home_coordinates['lat'] ) . '", center_lng: "' . esc_attr( $at_home_coordinates['lng'] ) . '", center_map: "' . esc_attr( $atts['center_map'] ) . '", zoom: ' . absint( $atts['zoom'] ) . ', height: ' . absint( $atts['height'] ) . ', brewery_id: ' . absint( $atts['brewery_id'] ) . ', api_key: "' . esc_attr( $atts['api_key'] ) . '"});';
 
 		wp_add_inline_script( 'brewery-activity-feed-js', $output_script );
 
@@ -229,15 +196,11 @@ class WC_Untapdd_Brewery_Activity_Feed {
 
 			$brewery_id = filter_input( INPUT_GET, 'brewery_id', FILTER_VALIDATE_INT );
 
-			if ( ! $brewery_id ) {
-				$brewery_id = get_option( 'wc_untappd_map_brewery_id', '' );
-			}
-
 			if ( empty( $brewery_id ) ) {
-				wp_send_json( array( 'error' => __( 'Brewery ID is empty, please set it at Woocommerce Untappd Options Tab', 'wc-untappd-ratings' ) ) );
+				wp_send_json( array( 'error' => __( 'Brewery ID is empty, please set it at WooCommerce  Untappd Options Tab', 'wc-untappd-ratings' ) ) );
 			}
 
-			$max_checkins = $this->max_checkins( filter_input( INPUT_GET, 'max_checkins', FILTER_VALIDATE_INT ) );
+			$max_checkins = filter_input( INPUT_GET, 'max_checkins', FILTER_VALIDATE_INT );
 
 			$cache_key = 'wc_untappd_map_feed_' . $brewery_id . ( ( current_user_can( 'edit_posts' ) ) ? '_is_admin_' : '_' ) . apply_filters( 'wpml_current_language', '' ) . '_' . $max_checkins;
 
@@ -268,16 +231,10 @@ class WC_Untapdd_Brewery_Activity_Feed {
 				wp_send_json( array( 'error' => __( 'Untappd Cache not working', 'wc-untappd-ratings' ) ) );
 			}
 
-			$brewery_feed_result = WC_Untappd_Ratings::API()->get( 'brewery/checkins/' . $brewery_id );
+			$brewery_feed_result = WC_Untappd_Ratings::API()->brewery_activity_feed( $brewery_id );
 
 			if ( is_untappd_error( $brewery_feed_result ) ) {
 				wp_send_json( array( 'error' => __( 'Untappd API not working', 'wc-untappd-ratings' ) ) );
-			}
-
-			$brewery_feed_result = json_decode( $brewery_feed_result, true );
-
-			if ( json_last_error() !== JSON_ERROR_NONE ) {
-				wp_send_json( array( 'error' => __( 'Untappd invalid response', 'wc-untappd-ratings' ) ) );
 			}
 
 			$wc_untappd_map_feed = $this->brewery_feed( $brewery_feed_result );
@@ -291,20 +248,16 @@ class WC_Untapdd_Brewery_Activity_Feed {
 					break;
 				}
 
-				$brewery_feed_result = WC_Untappd_Ratings::API()->get( 'brewery/checkins/' . $brewery_id, array( 'max_id' => $brewery_feed_result['response']['pagination']['max_id'] ) );
+				$brewery_feed_result = WC_Untappd_Ratings::API()->brewery_activity_feed( $brewery_id, $brewery_feed_result['response']['pagination']['max_id'] );
 
-				if ( is_untappd_error( $brewery_feed_result ) ) {
+				if ( empty( $brewery_feed_result ) || is_untappd_error( $brewery_feed_result ) ) {
 					wp_send_json( $wc_untappd_map_feed );
 				}
-
-				$brewery_feed_result = json_decode( $brewery_feed_result, true );
 
 				$wc_untappd_map_feed = $this->array_merge_recursive_distinct( $wc_untappd_map_feed, $this->brewery_feed( $brewery_feed_result ) );
 			}
 
-			$cache_time = absint( get_option( 'wc_untappd_ratings_cache_time', 3 ) ) * HOUR_IN_SECONDS;
-
-			if ( set_transient( $cache_key, wp_json_encode( $wc_untappd_map_feed ), $cache_time ) === false ) {
+			if ( set_transient( $cache_key, wp_json_encode( $wc_untappd_map_feed ), WC_Untappd_Ratings::API()->get_cache_time() ) === false ) {
 				update_option( 'wc_untappd_map_cache_is_working', 'no' );
 			} else {
 				update_option( 'wc_untappd_map_cache_is_working', 'yes' );
@@ -326,11 +279,6 @@ class WC_Untapdd_Brewery_Activity_Feed {
 	 * @param string $at_home_coordinates Latitude, Longitude.
 	 */
 	private function get_home_coordinates( $at_home_coordinates = '' ) {
-
-		if ( empty( $at_home_coordinates ) ) {
-			$at_home_coordinates = get_option( 'wc_untappd_map_at_home_coordinates', null );
-		}
-
 		if (
 			empty( $at_home_coordinates ) ||
 			! is_string( $at_home_coordinates ) ||
@@ -373,14 +321,6 @@ class WC_Untapdd_Brewery_Activity_Feed {
 								'value' => absint( $untappd_checkin['beer']['bid'] ),
 							),
 						),
-						'tax_query'      => array(  // PHPCS:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
-							array(
-								'taxonomy' => 'product_cat',
-								'field'    => 'slug',
-								'terms'    => array( 'keykeg' ),
-								'operator' => 'NOT IN',
-							),
-						),
 					);
 
 					$products = get_posts( $args );
@@ -417,9 +357,9 @@ class WC_Untapdd_Brewery_Activity_Feed {
 						'user_name'      => sanitize_text_field( $untappd_checkin['user']['user_name'] ),
 						'comment'        => sanitize_textarea_field( $untappd_checkin_comment ),
 						'permalink'      => $permalink,
-						'product_id'     => (int) $product_id,
+						'product_id'     => absint( $product_id ),
 						'location'       => ( ! empty( $untappd_checkin['user']['location'] ) && current_user_can( 'edit_posts' ) ) ? sanitize_text_field( $untappd_checkin['user']['location'] ) : '',
-						'venue_name'     => $untappd_checkin['venue']['venue_name'],
+						'venue_name'     => sanitize_text_field( $untappd_checkin['venue']['venue_name'] ),
 						'foursquare_url' => ( filter_var( $untappd_checkin['venue']['foursquare']['foursquare_url'], FILTER_VALIDATE_URL ) ) ? $untappd_checkin['venue']['foursquare']['foursquare_url'] : '',
 						'checkin_date'   => date_i18n( get_option( 'date_format' ), strtotime( $untappd_checkin['created_at'] ) ),
 						'rating_score'   => ( ! empty( $untappd_checkin['rating_score'] ) ) ? number_format_i18n( $untappd_checkin['rating_score'], 2 ) : '',
@@ -437,7 +377,7 @@ class WC_Untapdd_Brewery_Activity_Feed {
 	 * @param int $max_checkins Chekins to show.
 	 */
 	private function max_checkins( int $max_checkins = null ) {
-		$max_checkins = ( $max_checkins ? $max_checkins : absint( get_option( 'wc_untappd_map_total_checkins', 25 ) ) ) / 25;
+		$max_checkins = ( $max_checkins ? $max_checkins : 300 ) / 25;
 
 		return ( $max_checkins > 12 ) ? 12 : absint( $max_checkins );
 	}
