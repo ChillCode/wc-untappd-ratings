@@ -27,8 +27,7 @@ Easy way to add a map using a shortcode:
 [wc_untappd_map api_key="GOOGLE_API_KEY" brewery_id="73836" center_map="yes" height="500" max_checkins="300" zoom="4"]
 
 ###### Google Javascript Maps API key.
-### Default ""
-
+Default ""
 api_key=""
 
 ### Brewery ID to show on map
