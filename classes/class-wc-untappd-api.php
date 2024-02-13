@@ -688,7 +688,11 @@ class WC_Untappd_API {
 	 */
 	private function get( string $untappd_method, array $untappd_params = array(), int $cache_time = null ) {
 		if ( empty( $untappd_method ) ) {
-			return new WC_Untappd_Error( '_invalid_method', __( 'Invalid method passed.', 'wc-untappd-ratings' ), 400 );
+			return new WC_Untappd_Error( 400, '_invalid_method', 400 );
+		}
+
+		if ( $this->untappt_x_ratelimit_remaining <= 0 ) {
+			return new WC_Untappd_Error( 429, '_limit_reached', 429 );
 		}
 
 		$untappd_params = wp_parse_args(
@@ -760,6 +764,14 @@ class WC_Untappd_API {
 	 * @return json|WC_Untappd_Error
 	 */
 	private function post( string $untappd_method, array $untappd_params = array() ) {
+		if ( empty( $untappd_method ) ) {
+			return new WC_Untappd_Error( 400, '_invalid_method', 400 );
+		}
+
+		if ( $this->untappt_x_ratelimit_remaining <= 0 ) {
+			return new WC_Untappd_Error( 429, '_limit_reached', 429 );
+		}
+
 		$arguments = array(
 			'timeout' => 5,
 			'headers' => array(
