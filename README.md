@@ -28,9 +28,9 @@ Easy way to add a map using a shortcode:
 
 | Attribute  | Description | Default |
 | ------------- | ------------- | ------------- |
-| api_ke  | Google Javascript Maps API key.  | "" |
+| api_key  | Google Javascript Maps API key.  | "" |
 | brewery_id  | Brewery ID to show on map.  | "0" |
-| center_map=""  | Center map.  | "no" |
+| center_map  | Center map.  | "no" |
 | height  | Google map height.  | "500" |
 | lat_lng  | Untappd at home default coordinates.  | "34.2346598,-77.9482096" |
 | map_class  | Map div class.  | "" |
@@ -38,9 +38,9 @@ Easy way to add a map using a shortcode:
 | map_style  | Map div style.  | "" |
 | map_type  | Show an "interactive" or "static" map. To use "static" map it's required to enable staticmap API.  | "interactive" |
 | map_use_icon  | Use Untappd icon to mark checkins on the map.  | "true" |
-| map_use_url_icon  | Use your own icon url.  | "" |
+| map_use_url_icon  | Checkins to show on the map. Max checkins to show are 300. | "" |
 | max_checkins  | Use your own icon url.  | "25" |
-| zoom  | Use your own icon url.  | "4" |
+| zoom  | Map zoom.  | "4" |
 
 ## Add Ratings to Structured Data
 
