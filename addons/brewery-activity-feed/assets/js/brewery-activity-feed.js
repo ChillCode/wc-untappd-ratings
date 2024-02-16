@@ -3,7 +3,7 @@
  * https://github.com/ChillCode/wc-untappd-ratings
  *
  *
- * Copyright (C) 2022 ChillCode
+ * Copyright (C) 2024 ChillCode
  * Released under the General Public License v3.0
  * https://www.gnu.org/licenses/gpl-3.0.html
  *
@@ -13,22 +13,39 @@
 	$.fn.UntappdMap = function (options) {
 
 		var settings = $.extend({
-			zoom: "14",
-			custom_style: "",
-			height: "300",
+			zoom: "4",
+			height: "500",
 			width: "640",
 			api_key: '',
 			brewery_id: 0,
 			max_checkins: 25,
 			center_map: 'no',
-			center_lat: '0',
-			center_lng: '0',
+			center_lat: '34.2346598',
+			center_lng: '-77.9482096',
 			map_use_icon: false,
 			map_use_url_icon: '',
 			map_type: 'interactive'
 		}, options);
 
+		checkconfig = function() {
+			if (!ajax_untappd_config.ajax_url) {
+				console.warn("[Untappd Ratings for WooCommerce] URL is required to initialize the map, check configuration.");
+				return false;
+			}
+
+			if (!settings.api_key) {
+				console.warn("[Untappd Ratings for WooCommerce] Google Javascript API key is required to initialize the map.");
+				return false;
+			}
+
+			return true;
+		};
+
 		init = function (selector, settings) {
+
+			if (false === checkconfig()) {
+				return false;
+			}
 
 			var myLatLng = new google.maps.LatLng(settings.center_lat, settings.center_lng);
 			var mapOptions = {
@@ -45,22 +62,8 @@
 			var mapElement = document.getElementById(selector.id);
 
 			if (mapElement) {
+				
 				var map = new google.maps.Map(mapElement, mapOptions);
-
-				if (settings.custom_style != '') {
-
-					var style_array = [];
-
-					style_array = JSON.parse(atob(settings.custom_style));
-
-					var customMapType = new google.maps.StyledMapType(style_array, {
-						name: 'Custom Style'
-					});
-
-					var customMapTypeId = 'custom_style';
-					map.mapTypes.set(customMapTypeId, customMapType);
-					map.setMapTypeId(customMapTypeId);
-				}
 
 				if (settings.center_map === 'yes') {
 					var centerLatLng = new google.maps.LatLng(settings.center_lat, settings.center_lng);
@@ -72,11 +75,6 @@
 		};
 
 		load_markers = function (map, map_use_icon, map_use_url_icon) {
-
-			if (!ajax_untappd_config.ajax_url) {
-				return false;
-			}
-
 			var request = $.ajax(
 				{
 					url: ajax_untappd_config.ajax_url,
@@ -103,7 +101,7 @@
 			);
 
 			request.fail(function (jqXHR, textStatus) {
-				console.log("Request failed: " + textStatus);
+				console.log(jqXHR);
 			}
 			);
 
@@ -113,7 +111,7 @@
 				if (untappd_checkin.location) {
 					untappd_checkin.location = "(" + untappd_checkin.location + ")";
 
-					location_data = $("<a>").attr({ target: '_blank', href: 'https://www.google.com/maps/search/?api=1&query=' + untappd_checkin.location }).text(untappd_checkin.location);
+					location_data = $("<a>").attr({ rel:'noopener noreferer', target: '_blank', href: 'https://www.google.com/maps/search/?api=1&query=' + untappd_checkin.location }).text(untappd_checkin.location);
 				}
 
 				rating_score = '';
@@ -155,7 +153,7 @@
 
 				product_link = '';
 
-				if (untappd_checkin.permalink && untappd_checkin.product_id) {
+				if (untappd_checkin.permalink) {
 					product_link = $("<a>").attr({ style: 'display:block;width:100%;', target: '_blank', href: untappd_checkin.permalink }).text(ajax_untappd_config.languages[5]);
 
 					product_link = $("<div>").append(
@@ -164,9 +162,9 @@
 				}
 
 				var html_title = $("<div>").attr({ class: "checkin_title" }).append($("<h5>").text(untappd_checkin.beer_name));
-				var html_image = $("<div>").attr({ class: "checkin_img" }).append($("<img>").attr({ alt: untappd_checkin.beer_name, src: untappd_checkin.beer_label }));
+				var html_image = $("<div>").attr({ class: "checkin_img" }).append($('<img loading="lazy">').attr({ alt: untappd_checkin.beer_name, src: untappd_checkin.beer_label }));
 				var html_desc = $("<div>").attr({ class: "checkin_desc" }).append($("<b>").html(untappd_checkin.user_name + ' '))
-					.append($("<b>").html(function (i, h) { return location_data; }))
+					.append($("<b>").html(function () { return location_data; }))
 					.append(' ' + ajax_untappd_config.languages[3] + ' ')
 					.append($("<b>").html(untappd_checkin.beer_name))
 					.append(' ' + ajax_untappd_config.languages[4] + ' ')
@@ -202,7 +200,7 @@
 
 						myLatLng = { lat: untappd_marker[property].lat, lng: untappd_marker[property].lng };
 
-						title = untappd_marker[property].beer_name;
+						title = untappd_marker[property].venue_name;
 
 						checkins.push({
 							'data': untappd_marker[property],
@@ -238,9 +236,10 @@
 					}
 				);
 
-				var infowindow = new google.maps.InfoWindow({ content: '<div id="infowindow-container" style="overflow:auto;"></div><div id="infowindow-pagination-container"></div>', maxWidth: 380 });
+				var infowindow = new google.maps.InfoWindow({ content: '<div id="infowindow-container"></div><div id="infowindow-pagination-container"></div>', maxWidth: 380, ariaLabel: title });
 
 				google.maps.event.addListener(infowindow, 'domready', (function () {
+
 					if (checkins.length > 1) {
 						$('#infowindow-pagination-container').pagination(
 							{
@@ -252,6 +251,7 @@
 								showNavigator: true,
 								showGoButton: true,
 								showGoInput: true,
+								formatNavigator: '<%= currentPage %> / <%= totalPage %>',
 								callback: function (data, pagination) {
 									$('#infowindow-container').html(data[0].html);
 								}
@@ -280,8 +280,7 @@
 		};
 
 		init_static = function (selector, settings) {
-
-			if (!ajax_untappd_config.ajax_url) {
+			if (false === checkconfig()) {
 				return false;
 			}
 
@@ -339,16 +338,14 @@
 						}
 					}
 
-					var img_src = '<img src="https://maps.googleapis.com/maps/api/staticmap?center=' + centerLatLng.toString() + '&language=' + ajax_untappd_config.map_current_lang + '&zoom=' + settings.zoom + markerStr + '&size=' + settings.width + 'x' + settings.height + markers + '&scale=1' + settings.custom_style + '&key=' + settings.api_key + '">';
+					var img_src = '<img src="https://maps.googleapis.com/maps/api/staticmap?center=' + centerLatLng.toString() + '&language=' + ajax_untappd_config.map_current_lang + '&zoom=' + settings.zoom + markerStr + '&size=' + settings.width + 'x' + settings.height + markers + '&scale=1&key=' + settings.api_key + '">';
 					container.find('.untappd_map').append(img_src);
 				}
-			}
-			);
+			});
 
 			request.fail(function (jqXHR, textStatus) {
-				console.log("Request failed: " + textStatus);
-			}
-			);
+				console.warn("[Untappd Ratings for WooCommerce] Request failed: " + textStatus);
+			});
 		};
 
 		this.each(function () {
