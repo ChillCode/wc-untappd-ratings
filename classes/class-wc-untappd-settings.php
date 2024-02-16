@@ -195,7 +195,7 @@ class WC_Untappd_Settings {
 			'title'    => __( 'Customer reviews minimum rating', 'wc-untappd-ratings' ),
 			'desc'     => __( 'Minimum rating for indexing customer reviews', 'wc-untappd-ratings' ),
 			'id'       => 'wc_untappd_ratings_review_min',
-			'default'  => '3.5',
+			'default'  => '0',
 			'type'     => 'text',
 			'desc_tip' => true,
 			'css'      => 'width:140px;',
