@@ -39,7 +39,7 @@ Easy way to add a map using a shortcode:
 | map_type | Show an "interactive" or "static" map. To use "static" map it's required to enable staticmap API. | "interactive" |
 | map_use_icon | Use Untappd icon to mark checkins on the map. | "true" |
 | map_use_url_icon | Use your own icon url. | "" |
-| max_checkins | Checkins to show on the map. Max checkins to show are 300. | "25" |
+| max_checkins | Checkins to show on the map. Max 300. | "25" |
 | zoom | Map zoom. | "4" |
 
 ## Add Ratings to Structured Data
