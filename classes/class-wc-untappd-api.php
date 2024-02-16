@@ -780,7 +780,7 @@ class WC_Untappd_API {
 			'body'    => $untappd_params,
 		);
 
-		$response_data = wp_safe_remote_post( $this->untappd_api_url . $untappd_method . '?' . http_build_query( $untappd_params['access_token'] ), $arguments );
+		$response_data = wp_safe_remote_post( $this->untappd_api_url . $untappd_method, $arguments );
 
 		/**
 		 * Set API remaining limit.
