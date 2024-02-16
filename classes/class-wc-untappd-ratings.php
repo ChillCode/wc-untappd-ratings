@@ -54,10 +54,11 @@ final class WC_Untappd_Ratings {
 
 		$woocommerce_plugin_path = trailingslashit( WP_PLUGIN_DIR ) . 'woocommerce/woocommerce.php';
 
-		if ( in_array( $woocommerce_plugin_path, (array) wp_get_active_and_valid_plugins(), true ) ||
-			in_array( $woocommerce_plugin_path, wp_get_active_network_plugins(), true )
-		) {
-			add_filter( 'network_admin_plugin_action_links_wc-untappd-ratings/wc-untappd-ratings.php', array( $this, 'plugin_action_links_woocommerce' ) );
+		if ( in_array( $woocommerce_plugin_path, (array) wp_get_active_and_valid_plugins(), true ) || is_multisite() && in_array( $woocommerce_plugin_path, wp_get_active_network_plugins(), true )	) {
+			if ( is_multisite() ) {
+				add_filter( 'network_admin_plugin_action_links_wc-untappd-ratings/wc-untappd-ratings.php', array( $this, 'plugin_action_links_woocommerce' ) );
+			}
+
 			add_filter( 'plugin_action_links_wc-untappd-ratings/wc-untappd-ratings.php', array( $this, 'plugin_action_links_woocommerce' ) );
 
 			add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ) );
