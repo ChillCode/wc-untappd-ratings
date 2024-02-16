@@ -6,10 +6,10 @@
  * Description: Connect your WooCommerce Store with Untappd
  * Author: ChillCode
  * Author URI: https://github.com/chillcode/
- * Version: 1.0.4
+ * Version: 1.0.5
  * Text Domain: wc-untappd-ratings
  * Domain Path: /languages/
- * php version 8.0
+ * php version 7.4
  *
  * Copyright: (c) 2003-2024 ChillCode (https://github.com/chillcode/)
  *
